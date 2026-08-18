@@ -83,15 +83,17 @@ ASGI_APPLICATION = "config.asgi.application"
 # Database
 # ---------------------------------------------------------------------------
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("POSTGRES_DB", default="ijara"),
-        "USER": env("POSTGRES_USER", default="ijara"),
-        "PASSWORD": env("POSTGRES_PASSWORD", default="ijara_dev_password"),
-        "HOST": env("POSTGRES_HOST", default="localhost"),
-        "PORT": env("POSTGRES_PORT", default="5432"),
-        "CONN_MAX_AGE": 60,
-    }
+    "default": env.db(
+        "DATABASE_URL",
+        default=(
+            "postgres://"
+            f"{env('POSTGRES_USER', default='ijara')}:"
+            f"{env('POSTGRES_PASSWORD', default='ijara_dev_password')}@"
+            f"{env('POSTGRES_HOST', default='localhost')}:"
+            f"{env('POSTGRES_PORT', default='5432')}/"
+            f"{env('POSTGRES_DB', default='ijara')}"
+        ),
+    )
 }
 
 # ---------------------------------------------------------------------------

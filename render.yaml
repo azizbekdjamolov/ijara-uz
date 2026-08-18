@@ -1,0 +1,106 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Django REST API (ijara.uz backend)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: ijara-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    region: frankfurt
+    healthCheckPath: /api/health/
+    buildCommand: pip install -r requirements.txt
+    startCommand: >
+      python manage.py migrate --noinput &&
+      python manage.py collectstatic --noinput &&
+      gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECURE_SSL_REDIRECT
+        value: "false"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: localhost,127.0.0.1,.onrender.com
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://ijara-frontend.onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://ijara-frontend.onrender.com
+      - key: EMAIL_BACKEND
+        value: django.core.mail.backends.console.EmailBackend
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # ---------------------------------------------------------------------------
+  # Celery worker (AI analysis, notifications, moderation jobs)
+  # ---------------------------------------------------------------------------
+  - type: worker
+    name: ijara-worker
+    runtime: python
+    rootDir: backend
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A config worker -l info --concurrency 2
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: localhost,127.0.0.1,.onrender.com
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # ---------------------------------------------------------------------------
+  # Next.js frontend
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: ijara-frontend
+    runtime: node
+    rootDir: frontend
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://ijara-api.onrender.com/api/v1
+
+  # ---------------------------------------------------------------------------
+  # One-off: seed demo data (admin + listings). Run manually from dashboard.
+  # ---------------------------------------------------------------------------
+  - type: job
+    name: ijara-seed
+    runtime: python
+    rootDir: backend
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py migrate --noinput && python manage.py seed_demo --listings 12
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: localhost,127.0.0.1,.onrender.com
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
