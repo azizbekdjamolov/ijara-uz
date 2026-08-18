@@ -1,0 +1,202 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Send } from "lucide-react";
+
+import { api, ApiRequestError } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
+import { formatCompactPrice, formatRelative } from "@/lib/format";
+import type { Conversation, Message } from "@/lib/types";
+
+export default function MessagesPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [text, setText] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loadingList, setLoadingList] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const loadConversations = useCallback(async () => {
+    try {
+      const data = await api.get<{ count: number; results: Conversation[] }>(
+        "/chat/conversations/"
+      );
+      setConversations(data.results);
+    } catch (e) {
+      setError(e instanceof ApiRequestError ? e.message : "Xatolik");
+    } finally {
+      setLoadingList(false);
+    }
+  }, []);
+
+  const loadMessages = useCallback(async (conversationId: string) => {
+    try {
+      const data = await api.get<{ count: number; results: Message[] }>(
+        `/chat/conversations/${conversationId}/messages/`
+      );
+      setMessages(data.results);
+    } catch (e) {
+      setError(e instanceof ApiRequestError ? e.message : "Xatolik");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      router.push("/login?next=/xabarlar");
+      return;
+    }
+    loadConversations();
+  }, [user, loading, router, loadConversations]);
+
+  useEffect(() => {
+    if (activeId) loadMessages(activeId);
+    else setMessages([]);
+  }, [activeId, loadMessages]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
+  }, [messages]);
+
+  const send = async () => {
+    if (!activeId || !text.trim()) return;
+    const body = text;
+    setText("");
+    try {
+      await api.post(`/chat/conversations/${activeId}/messages/create/`, {
+        text: body,
+      });
+      loadMessages(activeId);
+      loadConversations();
+    } catch (e) {
+      setError(e instanceof ApiRequestError ? e.message : "Yuborilmadi");
+    }
+  };
+
+  if (loading || (user && loadingList)) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-[#9CA3AF]">
+        Yuklanmoqda...
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const otherName = (c: Conversation) =>
+    c.tenant.id === user.id ? c.owner.full_name || "Uy egasi" : c.tenant.full_name || "Ijarachi";
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-6">
+      <h1 className="text-xl font-bold mb-4">Xabarlar</h1>
+      {error && (
+        <div className="mb-4 bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] rounded-lg px-4 py-2 text-sm">
+          {error}
+        </div>
+      )}
+      <div className="grid md:grid-cols-[300px_1fr] gap-4 h-[65vh]">
+        <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-y-auto">
+          {conversations.length === 0 ? (
+            <div className="p-6 text-center text-sm text-[#9CA3AF]">
+              Hozircha suhbatlar yo'q.
+              <br />
+              E'longa kirib "Egasi bilan bog'lanish" tugmasini bosing.
+            </div>
+          ) : (
+            conversations.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setActiveId(c.id)}
+                className={`w-full text-left px-4 py-3 border-b border-[#F3F4F6] hover:bg-[#F8FAFC] ${
+                  activeId === c.id ? "bg-[#F0FDF4]" : ""
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-sm truncate">
+                    {otherName(c)}
+                  </span>
+                  {c.last_message_at && (
+                    <span className="text-[11px] text-[#9CA3AF] shrink-0">
+                      {formatRelative(c.last_message_at)}
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-[#6B7280] truncate mt-0.5">
+                  {c.listing.title} · {formatCompactPrice(c.listing.price)}
+                </div>
+                {c.last_message && (
+                  <div className="text-xs text-[#9CA3AF] truncate mt-1">
+                    {c.last_message}
+                  </div>
+                )}
+              </button>
+            ))
+          )}
+        </div>
+
+        <div className="bg-white border border-[#E5E7EB] rounded-xl flex flex-col">
+          {activeId ? (
+            <>
+              <div
+                ref={scrollRef}
+                className="flex-1 overflow-y-auto p-4 space-y-3"
+              >
+                {messages.map((m) => {
+                  const mine = m.sender === user.id;
+                  return (
+                    <div
+                      key={m.id}
+                      className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm ${
+                        mine
+                          ? "bg-[#16A34A] text-white self-end ml-auto rounded-br-sm"
+                          : "bg-[#F3F4F6] text-[#111827] self-start rounded-bl-sm"
+                      }`}
+                    >
+                      {m.text}
+                      <div
+                        className={`text-[10px] mt-1 ${
+                          mine ? "text-white/70" : "text-[#9CA3AF]"
+                        }`}
+                      >
+                        {formatRelative(m.created_at)}
+                      </div>
+                    </div>
+                  );
+                })}
+                {messages.length === 0 && (
+                  <div className="text-center text-sm text-[#9CA3AF] pt-10">
+                    Suhbatni boshlang
+                  </div>
+                )}
+              </div>
+              <div className="border-t border-[#E5E7EB] p-3 flex gap-2">
+                <input
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && send()}
+                  placeholder="Xabar yozing..."
+                  className="flex-1 border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#16A34A]"
+                />
+                <button
+                  onClick={send}
+                  className="bg-[#16A34A] text-white rounded-lg px-3.5 hover:bg-[#15803D]"
+                  aria-label="Yuborish"
+                >
+                  <Send size={18} />
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-[#9CA3AF] text-sm">
+              Suhbat tanlang
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
