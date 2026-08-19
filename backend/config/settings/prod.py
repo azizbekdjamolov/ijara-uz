@@ -29,6 +29,10 @@ CELERY_RESULT_BACKEND = env(
     default=f"{env('REDIS_URL', default='redis://localhost:6379/0')}/2",
 )
 
+# Run tasks synchronously when no worker is available (free plan).
+CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
+CELERY_TASK_EAGER_PROPAGATES = env.bool("CELERY_TASK_EAGER_PROPAGATES", default=True)
+
 # Production email requires an SMTP provider (Render does not ship one).
 EMAIL_BACKEND = env(
     "EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
