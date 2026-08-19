@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 match = NAME_PATTERN.search(image.image.name)
                 seed = int(match.group(1)) if match else 0
                 generated = _make_image(seed, 800, 600)
-                image.image.save(image.image.name, generated, save=True)
+                image.image.save(image.image.name.rsplit("/", 1)[-1], generated, save=True)
                 recreated += 1
 
             if image.thumb and not image.thumb.storage.exists(image.thumb.name):
