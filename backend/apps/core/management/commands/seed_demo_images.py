@@ -40,25 +40,23 @@ class Command(BaseCommand):
                 image.image.save(image.image.name, generated, save=True)
                 recreated += 1
 
-            if current is not None and image.thumb:
-                try:
-                    if not image.thumb.storage.exists(image.thumb.name):
-                        thumb = make_thumb(image.image.storage.open(image.image.name))
-                        if thumb:
-                            image.thumb.save(image.thumb.name, thumb, save=True)
-                            thumbed += 1
-                except Exception:
-                    pass
-            elif image.thumb is None:
+            if image.thumb and not image.thumb.storage.exists(image.thumb.name):
                 try:
                     thumb = make_thumb(image.image.storage.open(image.image.name))
                     if thumb:
-                        image.thumb.save(
-                            f"thumbs/{image.image.name.rsplit('/', 1)[-1]}", thumb, save=True
-                        )
+                        image.thumb.save(image.thumb.name, thumb, save=True)
                         thumbed += 1
                 except Exception:
                     pass
+            elif not image.thumb:
+                try:
+                    thumb = make_thumb(image.image.storage.open(image.image.name))
+                    if thumb:
+                        thumb_name = f"thumbs/{image.image.name.rsplit('/', 1)[-1]}"
+                        image.thumb.save(thumb_name, thumb, save=True)
+                        thumbed += 1
+                except Exception as exc:
+                    self.stderr.write(f"thumb failed for {image.image.name}: {exc}")
 
         self.stdout.write(
             self.style.SUCCESS(
