@@ -130,8 +130,8 @@ function ListingsPage() {
           onClick={() => setPropertyType(propertyType === t ? "" : t)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
             propertyType === t
-              ? "bg-primary text-white shadow-md"
-              : "bg-[rgba(118,118,128,0.1)] text-foreground hover:bg-[rgba(118,118,128,0.18)]"
+              ? "bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] shadow-[0_4px_12px_rgba(212,175,55,0.3)]"
+              : "bg-[rgba(255,255,255,0.06)] text-foreground hover:bg-[rgba(255,255,255,0.12)] border border-[rgba(212,175,55,0.18)]"
           }`}
         >
           {PROPERTY_TYPE_LABELS[t]}
@@ -151,7 +151,7 @@ function ListingsPage() {
           <SlidersHorizontal size={16} />
           Filtrlar
           {activeFilterCount > 0 && (
-            <span className="bg-white text-primary w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold">
+            <span className="bg-[#1a1405] text-gold w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold">
               {activeFilterCount}
             </span>
           )}
@@ -169,7 +169,7 @@ function ListingsPage() {
               <span className="font-semibold">Filtrlash</span>
               <button
                 onClick={clearFilters}
-                className="text-xs text-primary font-medium hover:underline flex items-center gap-1"
+                className="text-xs text-gold font-medium hover:underline flex items-center gap-1"
               >
                 <X size={13} /> Tozalash
               </button>
@@ -254,14 +254,14 @@ function ListingsPage() {
             </div>
 
             <label className="flex items-center gap-2.5 text-sm cursor-pointer select-none">
-              <span className={`relative inline-flex w-11 h-7 rounded-full transition-colors ${furnished ? "bg-primary" : "bg-[rgba(118,118,128,0.25)]"}`}>
+              <span className={`relative inline-flex w-11 h-7 rounded-full transition-colors ${furnished ? "bg-gradient-to-r from-[#e8c869] to-[#b3902a]" : "bg-[rgba(118,118,128,0.25)]"}`}>
                 <input
                   type="checkbox"
                   checked={furnished}
                   onChange={(e) => setFurnished(e.target.checked)}
                   className="peer sr-only"
                 />
-                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${furnished ? "translate-x-4" : ""}`} />
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-[#12162a] rounded-full shadow transition-transform ${furnished ? "translate-x-4" : ""}`} />
               </span>
               Mebelli
             </label>

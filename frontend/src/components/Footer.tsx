@@ -2,15 +2,15 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-[var(--border)] mt-12 safe-bottom pb-16 md:pb-8">
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+    <footer className="mt-12 safe-bottom pb-20 md:pb-8 border-t border-[rgba(212,175,55,0.12)] bg-[#07090f]/60 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
         <div>
-          <div className="flex items-center gap-1.5 mb-3">
-            <span className="w-7 h-7 rounded-lg bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white flex items-center justify-center font-bold text-sm shadow-md">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-8 h-8 rounded-lg bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] flex items-center justify-center font-serif font-bold shadow-md">
               I
             </span>
-            <span className="font-bold">
-              Ijara<span className="text-primary">.uz</span>
+            <span className="font-serif font-bold text-lg">
+              Ijara<span className="text-gold">.uz</span>
             </span>
           </div>
           <p className="text-muted">
@@ -18,55 +18,56 @@ export default function Footer() {
           </p>
         </div>
         <div>
-          <h3 className="font-semibold mb-2 text-foreground">Ijara</h3>
-          <ul className="space-y-1.5 text-muted">
+          <h3 className="font-semibold mb-3 text-foreground">Ijara</h3>
+          <ul className="space-y-2 text-muted">
             <li>
-              <Link href="/elonlar" className="hover:text-primary transition-colors">
+              <Link href="/elonlar" className="hover:text-gold transition-colors">
                 E&apos;lonlar
               </Link>
             </li>
             <li>
-              <Link href="/xarita" className="hover:text-primary transition-colors">
+              <Link href="/xarita" className="hover:text-gold transition-colors">
                 Xarita
               </Link>
             </li>
             <li>
-              <Link href="/elon-joylash" className="hover:text-primary transition-colors">
+              <Link href="/elon-joylash" className="hover:text-gold transition-colors">
                 E&apos;lon berish
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold mb-2 text-foreground">Foydalanuvchi</h3>
-          <ul className="space-y-1.5 text-muted">
+          <h3 className="font-semibold mb-3 text-foreground">Foydalanuvchi</h3>
+          <ul className="space-y-2 text-muted">
             <li>
-              <Link href="/login" className="hover:text-primary transition-colors">
+              <Link href="/login" className="hover:text-gold transition-colors">
                 Kirish
               </Link>
             </li>
             <li>
-              <Link href="/register" className="hover:text-primary transition-colors">
+              <Link href="/register" className="hover:text-gold transition-colors">
                 Ro&apos;yxatdan o&apos;tish
               </Link>
             </li>
             <li>
-              <Link href="/saqlanganlar" className="hover:text-primary transition-colors">
+              <Link href="/saqlanganlar" className="hover:text-gold transition-colors">
                 Saqlanganlar
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold mb-2 text-foreground">Yordam</h3>
-          <ul className="space-y-1.5 text-muted">
+          <h3 className="font-semibold mb-3 text-foreground">Yordam</h3>
+          <ul className="space-y-2 text-muted">
             <li>Xavfsizlik qoidalari</li>
             <li>Aloqa: +998 90 123 45 67</li>
             <li>support@ijara.uz</li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-[var(--border)] py-4 text-center text-xs text-muted">
+      <div className="gold-line mx-auto max-w-3xl" />
+      <div className="py-5 text-center text-xs text-muted">
         © {new Date().getFullYear()} Ijara.uz — Barcha huquqlar himoyalangan
       </div>
     </footer>

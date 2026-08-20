@@ -28,7 +28,7 @@ export default function Header() {
       <Link
         href={href}
         className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors ${
-          isActive ? "text-primary" : "text-muted hover:text-foreground"
+          isActive ? "text-gold" : "text-muted hover:text-foreground"
         }`}
       >
         {icon}
@@ -38,23 +38,23 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-[var(--border)]">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="w-8 h-8 rounded-[10px] bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white flex items-center justify-center font-bold text-base shadow-md">
+    <header className="sticky top-0 z-40 bg-[#07090f]/80 backdrop-blur-xl border-b border-[rgba(212,175,55,0.15)]">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <span className="w-9 h-9 rounded-xl bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] flex items-center justify-center font-serif font-bold text-lg shadow-[0_4px_16px_rgba(212,175,55,0.4)] group-hover:shadow-[0_6px_24px_rgba(212,175,55,0.55)] transition-shadow">
             I
           </span>
-          <span className="font-bold text-lg tracking-tight hidden xs:block sm:block">
-            Ijara<span className="text-primary">.uz</span>
+          <span className="font-serif font-bold text-xl tracking-tight hidden xs:block sm:block text-foreground">
+            Ijara<span className="text-gold">.uz</span>
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
           <Link
             href="/elonlar"
             className={`transition-colors ${
               active("/elonlar")
-                ? "text-primary font-semibold"
+                ? "text-gold font-semibold"
                 : "text-muted hover:text-foreground"
             }`}
           >
@@ -64,7 +64,7 @@ export default function Header() {
             href="/xarita"
             className={`flex items-center gap-1 transition-colors ${
               active("/xarita")
-                ? "text-primary font-semibold"
+                ? "text-gold font-semibold"
                 : "text-muted hover:text-foreground"
             }`}
           >
@@ -83,7 +83,7 @@ export default function Header() {
         <div className="flex items-center gap-1.5">
           <Link
             href="/elon-joylash"
-            className="hidden sm:flex items-center gap-1.5 btn btn-primary px-4 py-2 text-sm"
+            className="hidden sm:flex items-center gap-1.5 btn btn-primary px-4.5 py-2 text-sm"
           >
             <Plus size={16} strokeWidth={2.5} />
             E&apos;lon berish
@@ -93,21 +93,21 @@ export default function Header() {
             <div className="flex items-center gap-0.5">
               <Link
                 href="/xabarlar"
-                className="p-2 rounded-lg hover:bg-[rgba(118,118,128,0.1)] text-muted transition-colors relative"
+                className="p-2 rounded-lg hover:bg-white/5 text-muted transition-colors relative"
                 title="Xabarlar"
               >
                 <MessageCircle size={20} />
               </Link>
               <Link
                 href="/saqlanganlar"
-                className="p-2 rounded-lg hover:bg-[rgba(118,118,128,0.1)] text-muted transition-colors relative"
+                className="p-2 rounded-lg hover:bg-white/5 text-muted transition-colors relative"
                 title="Saqlanganlar"
               >
                 <Heart size={20} />
               </Link>
               <Link
                 href="/profil"
-                className="p-2 rounded-lg hover:bg-[rgba(118,118,128,0.1)] text-muted transition-colors"
+                className="p-2 rounded-lg hover:bg-white/5 text-muted transition-colors"
                 title="Profil"
               >
                 <User size={20} />
@@ -126,7 +126,7 @@ export default function Header() {
             <div className="flex items-center gap-1.5">
               <Link
                 href="/login"
-                className="hidden sm:flex text-sm font-semibold text-foreground hover:text-primary px-2 transition-colors"
+                className="hidden sm:flex text-sm font-semibold text-foreground hover:text-gold px-2 transition-colors"
               >
                 Kirish
               </Link>
@@ -141,18 +141,18 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-t border-[var(--border)] safe-bottom">
-        <div className="flex items-stretch justify-around h-14">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0a0e1c]/90 backdrop-blur-xl border-t border-[rgba(212,175,55,0.15)] safe-bottom">
+        <div className="flex items-stretch justify-around h-16">
           {bottomItem("/", "Bosh", <Home size={22} strokeWidth={2.2} />)}
           {bottomItem("/elonlar", "Qidiruv", <Search size={22} strokeWidth={2.2} />)}
           <Link
             href="/elon-joylash"
-            className="flex flex-col items-center justify-center -mt-5"
+            className="flex flex-col items-center justify-center -mt-6"
           >
-            <span className="w-12 h-12 rounded-full bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white flex items-center justify-center shadow-lg">
+            <span className="w-13 h-13 rounded-full bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] flex items-center justify-center shadow-[0_8px_24px_rgba(212,175,55,0.45)]">
               <Plus size={24} strokeWidth={2.5} />
             </span>
-            <span className="text-[10px] font-medium text-primary mt-0.5">
+            <span className="text-[10px] font-medium text-gold mt-0.5">
               E&apos;lon
             </span>
           </Link>

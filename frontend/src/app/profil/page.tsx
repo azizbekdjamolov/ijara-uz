@@ -51,7 +51,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   const statusColor: Record<string, string> = {
-    published: "bg-accent/10 text-[#1a7f3d]",
+    published: "bg-[rgba(212,175,55,0.15)]/10 text-[#1a7f3d]",
     pending_review: "bg-[#FF9500]/10 text-[#b65f00]",
     ai_checking: "bg-[#FF9500]/10 text-[#b65f00]",
     needs_review: "bg-[#FF9500]/10 text-[#b65f00]",
@@ -66,7 +66,7 @@ export default function ProfilePage() {
     <div className="max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8">
       <div className="card p-6 mb-6 animate-fade-in-up">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white flex items-center justify-center text-2xl font-bold shadow-lg shrink-0">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] flex items-center justify-center text-2xl font-bold shadow-lg shrink-0">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
@@ -78,12 +78,12 @@ export default function ProfilePage() {
             </div>
             <div className="mt-1.5 flex flex-wrap gap-2 text-xs">
               {user.is_phone_verified && (
-                <span className="bg-accent/10 text-[#1a7f3d] px-2 py-0.5 rounded-full font-medium">
+                <span className="bg-[rgba(212,175,55,0.15)]/10 text-[#1a7f3d] px-2 py-0.5 rounded-full font-medium">
                   Telefon tasdiqlangan
                 </span>
               )}
               {user.is_profile_verified && (
-                <span className="bg-accent/10 text-[#1a7f3d] px-2 py-0.5 rounded-full font-medium">
+                <span className="bg-[rgba(212,175,55,0.15)]/10 text-[#1a7f3d] px-2 py-0.5 rounded-full font-medium">
                   Profil tasdiqlangan
                 </span>
               )}
@@ -179,7 +179,7 @@ export default function ProfilePage() {
           <div className="text-center py-10 text-muted animate-fade-in">
             <UserIcon size={40} className="mx-auto mb-3" />
             Hozircha e&apos;lonlaringiz yo&apos;q.
-            <Link href="/elon-joylash" className="block mt-2 text-primary font-semibold">
+            <Link href="/elon-joylash" className="block mt-2 text-gold font-semibold">
               Birinchi e&apos;lonni joylash
             </Link>
           </div>

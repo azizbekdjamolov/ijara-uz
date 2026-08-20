@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -82,7 +82,7 @@ export default function MapClient() {
                   </div>
                   <Link
                     href={`/elon/${marker.slug}`}
-                    className="inline-block mt-2 text-primary font-semibold hover:underline"
+                    className="inline-block mt-2 text-gold font-semibold hover:underline"
                   >
                     Ko'rish в†’
                   </Link>
@@ -92,19 +92,19 @@ export default function MapClient() {
           ))}
         </MapContainer>
         {loading && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-white rounded-full px-4 py-1.5 text-sm shadow-md z-[1000]">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#12162a]/90 backdrop-blur rounded-full px-4 py-1.5 text-sm shadow-md border border-[rgba(212,175,55,0.3)] z-[1000]">
             Yuklanmoqda...
           </div>
         )}
         {error && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-white rounded-full px-4 py-1.5 text-sm text-danger shadow-md z-[1000]">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#12162a] rounded-full px-4 py-1.5 text-sm text-danger shadow-md z-[1000]">
             {error}
           </div>
         )}
       </div>
-      <aside className="md:w-80 lg:w-96 bg-white border-t md:border-t-0 md:border-l border-[var(--border)] overflow-y-auto p-4 max-h-[40vh] md:max-h-none">
+      <aside className="md:w-80 lg:w-96 bg-[#0d1120]/80 backdrop-blur border-t md:border-t-0 md:border-l border-[rgba(212,175,55,0.18)] overflow-y-auto p-4 max-h-[40vh] md:max-h-none">
         <h2 className="font-bold mb-3 flex items-center gap-2">
-          <MapPin size={16} className="text-primary" />
+          <MapPin size={16} className="text-gold" />
           Xaritadagi e'lonlar ({markers.length})
         </h2>
         <div className="space-y-2">
@@ -112,7 +112,7 @@ export default function MapClient() {
             <Link
               key={marker.id}
               href={`/elon/${marker.slug}`}
-              className="block bg-[rgba(118,118,128,0.04)] border border-[var(--border)] rounded-lg p-3 hover:border-primary transition-colors"
+              className="block bg-[rgba(118,118,128,0.04)] border border-[rgba(212,175,55,0.18)] rounded-lg p-3 hover:border-[rgba(212,175,55,0.6)] transition-colors"
             >
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm">

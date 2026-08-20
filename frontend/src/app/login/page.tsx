@@ -49,26 +49,27 @@ function LoginForm() {
     <div className="max-w-md mx-auto px-4 py-10 md:py-16">
       <div className="animate-fade-in-up">
         <div className="text-center mb-8">
-          <span className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white items-center justify-center text-2xl font-bold shadow-lg mb-4 animate-float">
+          <span className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] items-center justify-center display font-bold text-2xl shadow-[0_10px_30px_rgba(212,175,55,0.4)] mb-5 animate-float">
             I
           </span>
-          <h1 className="text-2xl font-bold text-foreground">Xush kelibsiz</h1>
-          <p className="text-sm text-muted mt-1">
+          <h1 className="display text-3xl font-bold text-foreground">Xush kelibsiz</h1>
+          <p className="text-sm text-muted mt-2">
             Hisobingizga kiring yoki Telegram orqali davom eting
           </p>
+          <div className="gold-line w-24 mx-auto mt-5" />
         </div>
 
         <div className="card p-6 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
           <TelegramLoginButton />
 
           <div className="flex items-center gap-3 my-5">
-            <span className="flex-1 h-px bg-[var(--border)]" />
+            <span className="flex-1 h-px bg-[rgba(212,175,55,0.15)]" />
             <span className="text-xs text-muted font-medium">yoki telefon bilan</span>
-            <span className="flex-1 h-px bg-[var(--border)]" />
+            <span className="flex-1 h-px bg-[rgba(212,175,55,0.15)]" />
           </div>
 
           {error && (
-            <div className="mb-4 bg-[#FFEBEA] border border-[#FFC7C5] text-danger rounded-lg px-4 py-2.5 text-sm animate-scale-in">
+            <div className="mb-4 bg-[rgba(255,107,94,0.1)] border border-[rgba(255,107,94,0.35)] text-danger rounded-xl px-4 py-2.5 text-sm animate-scale-in">
               {error}
             </div>
           )}
@@ -108,7 +109,7 @@ function LoginForm() {
             <button type="submit" disabled={submitting} className="btn btn-primary w-full py-3 text-sm">
               {submitting ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-[#1a1405]/30 border-t-[#1a1405] rounded-full animate-spin" />
                   Kirilmoqda...
                 </span>
               ) : (
@@ -119,7 +120,7 @@ function LoginForm() {
 
           <div className="mt-5 text-center text-sm text-muted">
             Hisobingiz yo&apos;qmi?{" "}
-            <Link href="/register" className="text-primary font-semibold hover:underline">
+            <Link href="/register" className="text-gold font-semibold hover:text-gold-light transition-colors">
               Ro&apos;yxatdan o&apos;ting
             </Link>
           </div>

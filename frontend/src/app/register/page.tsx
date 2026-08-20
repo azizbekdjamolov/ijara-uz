@@ -64,17 +64,18 @@ export default function RegisterPage() {
     <div className="max-w-md mx-auto px-4 py-10 md:py-16">
       <div className="animate-fade-in-up">
         <div className="text-center mb-8">
-          <span className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white items-center justify-center text-2xl font-bold shadow-lg mb-4 animate-float">
+          <span className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] items-center justify-center display font-bold text-2xl shadow-[0_10px_30px_rgba(212,175,55,0.4)] mb-5 animate-float">
             I
           </span>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="display text-3xl font-bold text-foreground">
             {step === "form" ? "Ro'yxatdan o'tish" : "Telefonni tasdiqlash"}
           </h1>
-          <p className="text-sm text-muted mt-1">
+          <p className="text-sm text-muted mt-2">
             {step === "form"
               ? "Ijaraga olish yoki ijaraga berishni boshlang"
               : `${phone} raqamiga kod yuborildi`}
           </p>
+          <div className="gold-line w-24 mx-auto mt-5" />
         </div>
 
         <div className="card p-6 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
@@ -83,19 +84,19 @@ export default function RegisterPage() {
               <TelegramLoginButton />
 
               <div className="flex items-center gap-3 my-5">
-                <span className="flex-1 h-px bg-[var(--border)]" />
+                <span className="flex-1 h-px bg-[rgba(212,175,55,0.15)]" />
                 <span className="text-xs text-muted font-medium">yoki telefon bilan</span>
-                <span className="flex-1 h-px bg-[var(--border)]" />
+                <span className="flex-1 h-px bg-[rgba(212,175,55,0.15)]" />
               </div>
             </>
           ) : null}
 
           {error && (
             <div
-              className={`mb-4 rounded-lg px-4 py-2.5 text-sm animate-scale-in ${
+              className={`mb-4 rounded-xl px-4 py-2.5 text-sm animate-scale-in ${
                 error.startsWith("Yangi kod")
-                  ? "bg-[#E9F8EF] border border-[#B8E8CB] text-[#1a7f3d]"
-                  : "bg-[#FFEBEA] border border-[#FFC7C5] text-danger"
+                  ? "bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.35)] text-gold"
+                  : "bg-[rgba(255,107,94,0.1)] border border-[rgba(255,107,94,0.35)] text-danger"
               }`}
             >
               {error}
@@ -142,7 +143,7 @@ export default function RegisterPage() {
               <button type="submit" disabled={submitting} className="btn btn-primary w-full py-3 text-sm">
                 {submitting ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-[#1a1405]/30 border-t-[#1a1405] rounded-full animate-spin" />
                     Yuborilmoqda...
                   </span>
                 ) : (
@@ -153,7 +154,7 @@ export default function RegisterPage() {
           ) : (
             <form onSubmit={submitCode} className="space-y-4">
               <div className="text-center text-sm text-muted mb-2">
-                <ShieldCheck size={32} className="mx-auto text-accent mb-2" />
+                <ShieldCheck size={32} className="mx-auto text-gold mb-2" />
                 SMS orqali kelgan 6 xonali kodni kiriting
               </div>
               <div className={inputWrap}>
@@ -171,7 +172,7 @@ export default function RegisterPage() {
               <button type="submit" disabled={submitting} className="btn btn-primary w-full py-3 text-sm">
                 {submitting ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-[#1a1405]/30 border-t-[#1a1405] rounded-full animate-spin" />
                     Tasdiqlanmoqda...
                   </span>
                 ) : (
@@ -181,7 +182,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={resend}
-                className="w-full text-center text-sm text-primary font-medium hover:underline"
+                className="w-full text-center text-sm text-gold font-medium hover:text-gold-light transition-colors"
               >
                 Kod kelmadimi? Qayta yuborish
               </button>
@@ -191,7 +192,7 @@ export default function RegisterPage() {
           {step === "form" && (
             <div className="mt-5 text-center text-sm text-muted">
               Hisobingiz bormi?{" "}
-              <Link href="/login" className="text-primary font-semibold hover:underline">
+              <Link href="/login" className="text-gold font-semibold hover:text-gold-light transition-colors">
                 Kiring
               </Link>
             </div>

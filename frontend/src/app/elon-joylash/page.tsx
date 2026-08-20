@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -192,9 +192,9 @@ export default function WizardPage() {
               onClick={() => index < step && setStep(index)}
               className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                 index < step
-                  ? "bg-primary text-white"
+                  ? "bg-[rgba(212,175,55,0.15)] text-white"
                   : index === step
-                  ? "bg-primary/10 text-primary border border-primary"
+                  ? "bg-[rgba(212,175,55,0.15)]/10 text-gold border border-[rgba(212,175,55,0.6)]"
                   : "bg-[rgba(118,118,128,0.12)] text-muted"
               }`}
             >
@@ -203,7 +203,7 @@ export default function WizardPage() {
             {index < STEP_TITLES.length - 1 && (
               <span
                 className={`h-0.5 w-5 ${
-                  index < step ? "bg-primary" : "bg-[var(--border)]"
+                  index < step ? "bg-[rgba(212,175,55,0.15)]" : "bg-[var(--border)]"
                 }`}
               />
             )}
@@ -221,17 +221,17 @@ export default function WizardPage() {
         {step === 0 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Type size={18} className="text-primary" /> Mulk turini tanlang
+              <Type size={18} className="text-gold" /> Mulk turini tanlang
             </h2>
             <div className="grid grid-cols-2 gap-3">
               {PROPERTY_TYPES.map((t) => (
                 <button
                   key={t.value}
                   onClick={() => set("property_type", t.value)}
-                  className={`border rounded-xl py-4 text-center font-medium text-sm ${
+                  className={`border rounded-xl py-4 text-center font-medium text-sm transition-all ${
                     draft.property_type === t.value
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-[var(--border)] hover:border-[#9CA3AF]"
+                      ? "border-[rgba(212,175,55,0.6)] bg-[rgba(212,175,55,0.12)] text-gold"
+                      : "border-[rgba(212,175,55,0.18)] hover:border-[rgba(212,175,55,0.4)]"
                   }`}
                 >
                   {t.label}
@@ -258,7 +258,7 @@ export default function WizardPage() {
         {step === 1 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <MapPin size={18} className="text-primary" /> Joylashuv
+              <MapPin size={18} className="text-gold" /> Joylashuv
             </h2>
             <label className={labelClass}>Tuman</label>
             <select
@@ -280,7 +280,7 @@ export default function WizardPage() {
         {step === 2 && (
           <div className="space-y-4">
             <h2 className="font-bold flex items-center gap-2">
-              <Type size={18} className="text-primary" /> Tavsif
+              <Type size={18} className="text-gold" /> Tavsif
             </h2>
             <div>
               <label className={labelClass}>Sarlavha</label>
@@ -307,7 +307,7 @@ export default function WizardPage() {
         {step === 3 && (
           <div className="space-y-4">
             <h2 className="font-bold flex items-center gap-2">
-              <Bed size={18} className="text-primary" /> Xususiyatlar
+              <Bed size={18} className="text-gold" /> Xususiyatlar
             </h2>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -362,7 +362,7 @@ export default function WizardPage() {
         {step === 4 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Camera size={18} className="text-primary" /> Rasmlar
+              <Camera size={18} className="text-gold" /> Rasmlar
             </h2>
             <input
               ref={fileInput}
@@ -374,10 +374,10 @@ export default function WizardPage() {
             />
             <button
               onClick={() => fileInput.current?.click()}
-              className="w-full border-2 border-dashed border-[var(--border)] rounded-xl py-10 text-center hover:border-primary transition-colors"
+              className="w-full border-2 border-dashed border-[rgba(212,175,55,0.18)] rounded-xl py-10 text-center hover:border-[rgba(212,175,55,0.6)] transition-colors"
             >
               <Camera size={28} className="mx-auto text-muted mb-2" />
-              <span className="text-sm font-medium text-primary">
+              <span className="text-sm font-medium text-gold">
                 Rasmlar yuklash (kamida 1 ta)
               </span>
               <span className="block text-xs text-muted mt-1">
@@ -389,7 +389,7 @@ export default function WizardPage() {
                 {images.map((img, i) => (
                   <li
                     key={`${img.name}-${i}`}
-                    className="flex items-center justify-between bg-[rgba(118,118,128,0.04)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm"
+                    className="flex items-center justify-between bg-[rgba(118,118,128,0.04)] border border-[rgba(212,175,55,0.18)] rounded-lg px-3 py-2 text-sm"
                   >
                     <span className="truncate max-w-[70%]">{img.name}</span>
                     <button
@@ -410,7 +410,7 @@ export default function WizardPage() {
         {step === 5 && (
           <div className="space-y-4">
             <h2 className="font-bold flex items-center gap-2">
-              <Wallet size={18} className="text-primary" /> Narx
+              <Wallet size={18} className="text-gold" /> Narx
             </h2>
             <div>
               <label className={labelClass}>Oylik ijara narxi, so'm</label>
@@ -438,7 +438,7 @@ export default function WizardPage() {
         {step === 6 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Tag size={18} className="text-primary" /> Tasdiqlash
+              <Tag size={18} className="text-gold" /> Tasdiqlash
             </h2>
             <dl className="space-y-2 text-sm">
               <Row label="Sarlavha" value={draft.title} />
@@ -449,14 +449,14 @@ export default function WizardPage() {
               <Row label="Narx" value={`${Number(draft.price).toLocaleString("ru-RU")} so'm/oy`} />
               <Row label="Rasmlar" value={`${images.length} ta`} />
             </dl>
-            <p className="mt-4 text-xs text-muted bg-[rgba(118,118,128,0.04)] border border-[var(--border)] rounded-lg p-3">
+            <p className="mt-4 text-xs text-muted bg-[rgba(118,118,128,0.04)] border border-[rgba(212,175,55,0.18)] rounded-lg p-3">
               E'lon AI tekshiruvidan o'tadi va bir necha daqiqada nashr qilinadi.
               Soxta yoki chalg'ituvchi e'lonlar rad etiladi.
             </p>
           </div>
         )}
 
-        <div className="flex justify-between mt-6 pt-4 border-t border-[var(--border)]">
+        <div className="flex justify-between mt-6 pt-4 border-t border-[rgba(212,175,55,0.18)]">
           <button
             onClick={() => setStep((s) => Math.max(s - 1, 0))}
             disabled={step === 0}

@@ -123,9 +123,9 @@ export default function ListingDetailPage() {
       )}
 
       <div className="flex items-center gap-2 text-xs text-muted mb-4 flex-wrap animate-fade-in-up">
-        <Link href="/" className="hover:text-primary transition-colors">Bosh sahifa</Link>
+        <Link href="/" className="hover:text-gold transition-colors">Bosh sahifa</Link>
         <span>/</span>
-        <Link href="/elonlar" className="hover:text-primary transition-colors">E&apos;lonlar</Link>
+        <Link href="/elonlar" className="hover:text-gold transition-colors">E&apos;lonlar</Link>
         <span>/</span>
         <span className="text-foreground font-medium">{property.district}</span>
       </div>
@@ -146,7 +146,7 @@ export default function ListingDetailPage() {
                     priority
                   />
                   {listing.verification.listing_checked && (
-                    <span className="absolute top-3 left-3 bg-accent/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 backdrop-blur shadow-sm">
+                    <span className="absolute top-3 left-3 bg-[rgba(212,175,55,0.15)]/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 backdrop-blur shadow-sm">
                       <ShieldCheck size={13} />
                       Tekshirilgan e&apos;lon
                     </span>
@@ -160,7 +160,7 @@ export default function ListingDetailPage() {
                         onClick={() => setActiveImage(index)}
                         className={`relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
                           index === activeImage
-                            ? "border-primary"
+                            ? "border-[rgba(212,175,55,0.6)]"
                             : "border-transparent opacity-70 hover:opacity-100"
                         }`}
                       >
@@ -196,7 +196,7 @@ export default function ListingDetailPage() {
             <div className="grid grid-cols-2 gap-3">
               {facts.map((f) => (
                 <div key={f.label} className="flex items-center gap-2.5 py-2">
-                  <span className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <span className="w-9 h-9 rounded-lg bg-[rgba(212,175,55,0.15)]/10 text-gold flex items-center justify-center shrink-0">
                     <f.icon size={17} />
                   </span>
                   <div>
@@ -212,7 +212,7 @@ export default function ListingDetailPage() {
                   key={a.label}
                   className={`px-3 py-1 rounded-full text-xs font-medium ${
                     a.on
-                      ? "bg-accent/10 text-[#1a7f3d]"
+                      ? "bg-[rgba(212,175,55,0.15)]/10 text-[#1a7f3d]"
                       : "bg-[rgba(118,118,128,0.08)] text-muted"
                   }`}
                 >
@@ -220,7 +220,7 @@ export default function ListingDetailPage() {
                 </span>
               ))}
               {property.deposit && (
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-[rgba(212,175,55,0.15)]/10 text-gold">
                   Kafolat: {formatPrice(property.deposit)}
                 </span>
               )}
@@ -267,7 +267,7 @@ export default function ListingDetailPage() {
                   className={`btn w-full py-3 text-sm border ${
                     favorite
                       ? "border-danger text-danger bg-danger/5"
-                      : "border-[var(--border)] text-foreground hover:border-primary hover:text-primary"
+                      : "border-[var(--border)] text-foreground hover:border-[rgba(212,175,55,0.6)] hover:text-gold"
                   }`}
                 >
                   <Heart size={18} fill={favorite ? "currentColor" : "none"} />
@@ -278,7 +278,7 @@ export default function ListingDetailPage() {
 
             <div className="mt-5 pt-4 border-t border-[var(--border)] flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] flex items-center justify-center font-bold">
                   {(listing.owner.full_name || "E").charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -291,7 +291,7 @@ export default function ListingDetailPage() {
                 </div>
               </div>
               {listing.verification.owner_profile_verified && (
-                <BadgeCheck size={20} className="text-accent" />
+                <BadgeCheck size={20} className="text-gold" />
               )}
             </div>
 

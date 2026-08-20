@@ -40,7 +40,7 @@ export default function FavoritesPage() {
 
   if (loading || (user && loadingList)) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-[#9CA3AF]">
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-muted">
         Yuklanmoqda...
       </div>
     );
@@ -59,7 +59,7 @@ export default function FavoritesPage() {
       {listings.length === 0 ? (
         <div className="text-center py-16 text-muted animate-fade-in">
           Hozircha saqlangan e&apos;lonlar yo&apos;q.
-          <Link href="/elonlar" className="block mt-2 text-primary font-semibold">
+          <Link href="/elonlar" className="block mt-2 text-gold font-semibold">
             E&apos;lonlarni ko&apos;rish
           </Link>
         </div>

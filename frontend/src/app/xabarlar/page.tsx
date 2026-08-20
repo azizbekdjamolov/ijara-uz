@@ -79,7 +79,7 @@ export default function MessagesPage() {
 
   if (loading || (user && loadingList)) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-[#9CA3AF]">
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-muted">
         Yuklanmoqda...
       </div>
     );
@@ -112,7 +112,7 @@ export default function MessagesPage() {
                 key={c.id}
                 onClick={() => setActiveId(c.id)}
                 className={`w-full text-left px-4 py-3 border-b border-[var(--border)] transition-colors ${
-                  activeId === c.id ? "bg-primary/5" : "hover:bg-[rgba(118,118,128,0.06)]"
+                  activeId === c.id ? "bg-[rgba(212,175,55,0.15)]/5" : "hover:bg-[rgba(118,118,128,0.06)]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -126,7 +126,7 @@ export default function MessagesPage() {
                   )}
                 </div>
                 <div className="text-xs text-muted truncate mt-0.5">
-                  {c.listing.title} · {formatCompactPrice(c.listing.price)}
+                  {c.listing.title} В· {formatCompactPrice(c.listing.price)}
                 </div>
                 {c.last_message && (
                   <div className="text-xs text-muted truncate mt-1">
@@ -152,7 +152,7 @@ export default function MessagesPage() {
                       key={m.id}
                       className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm animate-fade-in ${
                         mine
-                          ? "bg-primary text-white self-end ml-auto rounded-br-sm"
+                          ? "bg-[rgba(212,175,55,0.15)] text-white self-end ml-auto rounded-br-sm"
                           : "bg-[rgba(118,118,128,0.1)] text-foreground self-start rounded-bl-sm"
                       }`}
                     >
