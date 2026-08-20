@@ -44,7 +44,7 @@ class Command(BaseCommand):
                 try:
                     thumb = make_thumb(image.image.storage.open(image.image.name))
                     if thumb:
-                        image.thumb.save(image.thumb.name, thumb, save=True)
+                        image.thumb.save(image.thumb.name.rsplit("/", 1)[-1], thumb, save=True)
                         thumbed += 1
                 except Exception:
                     pass

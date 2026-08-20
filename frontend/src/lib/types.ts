@@ -102,7 +102,7 @@ export interface MapMarker {
 
 export interface UserProfile {
   id: string;
-  phone: string;
+  phone: string | null;
   full_name: string;
   avatar: string | null;
   role: "tenant" | "owner" | "moderator" | "admin";
@@ -110,6 +110,7 @@ export interface UserProfile {
   is_profile_verified: boolean;
   trust_tier: string;
   city: string;
+  telegram_username?: string;
 }
 
 export interface Conversation {

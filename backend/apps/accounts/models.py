@@ -23,9 +23,19 @@ class UserRole(models.TextChoices):
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     phone = models.CharField(
-        max_length=13, unique=True, validators=[PHONE_VALIDATOR], db_index=True
+        max_length=13,
+        unique=True,
+        validators=[PHONE_VALIDATOR],
+        db_index=True,
+        null=True,
+        blank=True,
     )
     email = models.EmailField(unique=True, null=True, blank=True, db_index=True)
+    telegram_id = models.BigIntegerField(
+        null=True, blank=True, unique=True, db_index=True
+    )
+    telegram_username = models.CharField(max_length=64, blank=True)
+    telegram_photo_url = models.URLField(blank=True)
     role = models.CharField(
         max_length=16, choices=UserRole.choices, default=UserRole.TENANT
     )

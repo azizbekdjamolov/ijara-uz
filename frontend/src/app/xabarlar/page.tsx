@@ -91,28 +91,28 @@ export default function MessagesPage() {
     c.tenant.id === user.id ? c.owner.full_name || "Uy egasi" : c.tenant.full_name || "Ijarachi";
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <h1 className="text-xl font-bold mb-4">Xabarlar</h1>
+    <div className="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-8">
+      <h1 className="text-2xl font-bold mb-4">Xabarlar</h1>
       {error && (
-        <div className="mb-4 bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] rounded-lg px-4 py-2 text-sm">
+        <div className="mb-4 bg-[#FFEBEA] border border-[#FFC7C5] text-danger rounded-lg px-4 py-2 text-sm">
           {error}
         </div>
       )}
-      <div className="grid md:grid-cols-[300px_1fr] gap-4 h-[65vh]">
-        <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-y-auto">
+      <div className="grid md:grid-cols-[300px_1fr] gap-4 h-[calc(100vh-160px)]">
+        <div className="card overflow-y-auto">
           {conversations.length === 0 ? (
-            <div className="p-6 text-center text-sm text-[#9CA3AF]">
-              Hozircha suhbatlar yo'q.
+            <div className="p-6 text-center text-sm text-muted">
+              Hozircha suhbatlar yo&apos;q.
               <br />
-              E'longa kirib "Egasi bilan bog'lanish" tugmasini bosing.
+              E&apos;longa kirib &quot;Egasi bilan bog&apos;lanish&quot; tugmasini bosing.
             </div>
           ) : (
             conversations.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setActiveId(c.id)}
-                className={`w-full text-left px-4 py-3 border-b border-[#F3F4F6] hover:bg-[#F8FAFC] ${
-                  activeId === c.id ? "bg-[#F0FDF4]" : ""
+                className={`w-full text-left px-4 py-3 border-b border-[var(--border)] transition-colors ${
+                  activeId === c.id ? "bg-primary/5" : "hover:bg-[rgba(118,118,128,0.06)]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -120,16 +120,16 @@ export default function MessagesPage() {
                     {otherName(c)}
                   </span>
                   {c.last_message_at && (
-                    <span className="text-[11px] text-[#9CA3AF] shrink-0">
+                    <span className="text-[11px] text-muted shrink-0">
                       {formatRelative(c.last_message_at)}
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-[#6B7280] truncate mt-0.5">
+                <div className="text-xs text-muted truncate mt-0.5">
                   {c.listing.title} · {formatCompactPrice(c.listing.price)}
                 </div>
                 {c.last_message && (
-                  <div className="text-xs text-[#9CA3AF] truncate mt-1">
+                  <div className="text-xs text-muted truncate mt-1">
                     {c.last_message}
                   </div>
                 )}
@@ -138,7 +138,7 @@ export default function MessagesPage() {
           )}
         </div>
 
-        <div className="bg-white border border-[#E5E7EB] rounded-xl flex flex-col">
+        <div className="card flex flex-col overflow-hidden">
           {activeId ? (
             <>
               <div
@@ -150,16 +150,16 @@ export default function MessagesPage() {
                   return (
                     <div
                       key={m.id}
-                      className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm ${
+                      className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm animate-fade-in ${
                         mine
-                          ? "bg-[#16A34A] text-white self-end ml-auto rounded-br-sm"
-                          : "bg-[#F3F4F6] text-[#111827] self-start rounded-bl-sm"
+                          ? "bg-primary text-white self-end ml-auto rounded-br-sm"
+                          : "bg-[rgba(118,118,128,0.1)] text-foreground self-start rounded-bl-sm"
                       }`}
                     >
                       {m.text}
                       <div
                         className={`text-[10px] mt-1 ${
-                          mine ? "text-white/70" : "text-[#9CA3AF]"
+                          mine ? "text-white/70" : "text-muted"
                         }`}
                       >
                         {formatRelative(m.created_at)}
@@ -168,22 +168,22 @@ export default function MessagesPage() {
                   );
                 })}
                 {messages.length === 0 && (
-                  <div className="text-center text-sm text-[#9CA3AF] pt-10">
+                  <div className="text-center text-sm text-muted pt-10">
                     Suhbatni boshlang
                   </div>
                 )}
               </div>
-              <div className="border-t border-[#E5E7EB] p-3 flex gap-2">
+              <div className="border-t border-[var(--border)] p-3 flex gap-2">
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && send()}
                   placeholder="Xabar yozing..."
-                  className="flex-1 border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#16A34A]"
+                  className="input flex-1"
                 />
                 <button
                   onClick={send}
-                  className="bg-[#16A34A] text-white rounded-lg px-3.5 hover:bg-[#15803D]"
+                  className="btn btn-primary px-3.5"
                   aria-label="Yuborish"
                 >
                   <Send size={18} />
@@ -191,7 +191,7 @@ export default function MessagesPage() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-[#9CA3AF] text-sm">
+            <div className="flex-1 flex items-center justify-center text-muted text-sm">
               Suhbat tanlang
             </div>
           )}

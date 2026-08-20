@@ -15,19 +15,19 @@ export default function SearchBar({ initial = "" }: { initial?: string }) {
   };
 
   return (
-    <form onSubmit={submit} className="w-full max-w-2xl">
-      <div className="flex items-center gap-2 bg-white rounded-xl shadow-lg border border-[#E5E7EB] px-4 py-2">
-        <Search size={20} className="text-[#9CA3AF] shrink-0" />
+    <form onSubmit={submit} className="w-full max-w-2xl animate-fade-in-up">
+      <div className="flex items-center gap-2 bg-white rounded-2xl shadow-lg px-4 py-1.5 border border-[var(--border)] focus-within:border-primary focus-within:shadow-[0_0_0_4px_rgba(0,122,255,0.15)] transition-all">
+        <Search size={20} className="text-muted shrink-0" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Masalan: Chilonzorda 2 xonali, 5 milliongacha..."
-          className="flex-1 py-2.5 text-[15px] outline-none placeholder:text-[#9CA3AF] bg-transparent"
+          className="flex-1 py-2.5 text-[15px] outline-none placeholder:text-muted bg-transparent"
           aria-label="E'lon qidirish"
         />
         <button
           type="submit"
-          className="bg-[#16A34A] text-white font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-[#15803D]"
+          className="btn btn-primary text-sm px-5 py-2.5 shrink-0"
         >
           Qidirish
         </button>

@@ -247,6 +247,9 @@ SMS_PROVIDER = env("SMS_PROVIDER", default="console")
 # provider is used; the platform never depends on external AI availability.
 GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
 
+# Telegram Login Widget bot token (optional). Enables "Kirish Telegram orqali".
+TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN", default="")
+
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------

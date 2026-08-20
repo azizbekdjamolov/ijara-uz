@@ -6,12 +6,15 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   BadgeCheck,
+  Bed,
   Calendar,
   Eye,
   Heart,
   MapPin,
   MessageCircle,
+  Ruler,
   ShieldCheck,
+  Building2,
 } from "lucide-react";
 
 import { api, ApiRequestError } from "@/lib/api";
@@ -76,7 +79,7 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-[#9CA3AF]">
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-muted">
         Yuklanmoqda...
       </div>
     );
@@ -84,7 +87,7 @@ export default function ListingDetailPage() {
 
   if (error || !listing) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-[#DC2626]">
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-danger">
         {error ?? "E'lon topilmadi"}
       </div>
     );
@@ -94,28 +97,45 @@ export default function ListingDetailPage() {
   const images = listing.images;
   const isOwner = user && user.id === listing.owner.id;
 
+  const facts = [
+    { icon: Building2, label: "Turi", value: PROPERTY_TYPE_LABELS[property.property_type] ?? "—" },
+    { icon: Bed, label: "Xonalar", value: property.rooms ? `${property.rooms} xona` : "—" },
+    { icon: Ruler, label: "Maydon", value: property.area ? `${property.area} m²` : "—" },
+    { icon: MapPin, label: "Qavat", value: property.floor ? `${property.floor}/${property.total_floors ?? "?"}` : "—" },
+  ];
+
+  const amenityItems = [
+    { label: "Mebel", on: property.furnished },
+    { label: "Konditsioner", on: property.has_ac },
+    { label: "Lift", on: property.has_elevator },
+    { label: "Internet", on: property.has_internet },
+    { label: "Avtoturargoh", on: property.has_parking },
+    { label: "Oilali", on: property.family_ok },
+    { label: "Talabalar", on: property.students_ok },
+  ];
+
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-8">
       {message && (
-        <div className="mb-4 bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] rounded-lg px-4 py-2 text-sm">
+        <div className="mb-4 bg-[#FFEBEA] border border-[#FFC7C5] text-danger rounded-lg px-4 py-2 text-sm animate-fade-in">
           {message}
         </div>
       )}
 
-      <div className="flex items-center gap-2 text-xs text-[#6B7280] mb-3 flex-wrap">
-        <Link href="/" className="hover:text-[#16A34A]">Bosh sahifa</Link>
+      <div className="flex items-center gap-2 text-xs text-muted mb-4 flex-wrap animate-fade-in-up">
+        <Link href="/" className="hover:text-primary transition-colors">Bosh sahifa</Link>
         <span>/</span>
-        <Link href="/elonlar" className="hover:text-[#16A34A]">E'lonlar</Link>
+        <Link href="/elonlar" className="hover:text-primary transition-colors">E&apos;lonlar</Link>
         <span>/</span>
-        <span className="text-[#111827] font-medium">{property.district}</span>
+        <span className="text-foreground font-medium">{property.district}</span>
       </div>
 
       <div className="grid md:grid-cols-[2fr_1fr] gap-6">
-        <div>
-          <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
+        <div className="min-w-0">
+          <div className="card overflow-hidden animate-fade-in-up">
             {images.length > 0 ? (
               <>
-                <div className="relative aspect-[4/3] bg-[#F3F4F6]">
+                <div className="relative aspect-[4/3] bg-[rgba(118,118,128,0.08)]">
                   <Image
                     src={images[activeImage].image}
                     alt={listing.title}
@@ -126,22 +146,22 @@ export default function ListingDetailPage() {
                     priority
                   />
                   {listing.verification.listing_checked && (
-                    <span className="absolute top-3 left-3 bg-[#16A34A]/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <span className="absolute top-3 left-3 bg-accent/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 backdrop-blur shadow-sm">
                       <ShieldCheck size={13} />
-                      Tekshirilgan e'lon
+                      Tekshirilgan e&apos;lon
                     </span>
                   )}
                 </div>
                 {images.length > 1 && (
-                  <div className="flex gap-2 p-2 overflow-x-auto">
+                  <div className="flex gap-2 p-2 overflow-x-auto no-scrollbar">
                     {images.map((img, index) => (
                       <button
                         key={img.id}
                         onClick={() => setActiveImage(index)}
-                        className={`relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border-2 ${
+                        className={`relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
                           index === activeImage
-                            ? "border-[#16A34A]"
-                            : "border-transparent"
+                            ? "border-primary"
+                            : "border-transparent opacity-70 hover:opacity-100"
                         }`}
                       >
                         <Image
@@ -158,78 +178,96 @@ export default function ListingDetailPage() {
                 )}
               </>
             ) : (
-              <div className="aspect-[4/3] flex items-center justify-center text-[#9CA3AF]">
-                Rasm yo'q
+              <div className="aspect-[4/3] flex items-center justify-center text-muted">
+                Rasm yo&apos;q
               </div>
             )}
           </div>
 
-          <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 mt-4">
-            <h2 className="font-bold mb-3">Tavsif</h2>
-            <p className="text-[#374151] whitespace-pre-line text-sm leading-relaxed">
+          <div className="card p-4 mt-4 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
+            <h2 className="font-bold mb-3 text-lg">Tavsif</h2>
+            <p className="text-foreground/70 whitespace-pre-line text-sm leading-relaxed">
               {property.description || "Tavsif berilmagan"}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 mt-4">
-            <h2 className="font-bold mb-3">Xususiyatlar</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-              <Feature label="Turi" value={PROPERTY_TYPE_LABELS[property.property_type] ?? "—"} />
-              <Feature label="Xonalar" value={property.rooms ? `${property.rooms} xona` : "—"} />
-              <Feature label="Maydon" value={property.area ? `${property.area} m²` : "—"} />
-              <Feature label="Qavat" value={property.floor ? `${property.floor}/${property.total_floors ?? "?"}` : "—"} />
-              <Feature label="Mebel" value={property.furnished ? "Bor" : "Yo'q"} />
-              <Feature label="Konditsioner" value={property.has_ac ? "Bor" : "Yo'q"} />
-              <Feature label="Lift" value={property.has_elevator ? "Bor" : "Yo'q"} />
-              <Feature label="Internet" value={property.has_internet ? "Bor" : "Yo'q"} />
-              <Feature label="Avtoturargoh" value={property.has_parking ? "Bor" : "Yo'q"} />
-              <Feature label="Oilali" value={property.family_ok ? "Mumkin" : "Yo'q"} />
-              <Feature label="Talabalar" value={property.students_ok ? "Mumkin" : "Yo'q"} />
-              <Feature label="Kafolat" value={property.deposit ? formatPrice(property.deposit) : "—"} />
+          <div className="card p-4 mt-4 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+            <h2 className="font-bold mb-3 text-lg">Xususiyatlar</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {facts.map((f) => (
+                <div key={f.label} className="flex items-center gap-2.5 py-2">
+                  <span className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                    <f.icon size={17} />
+                  </span>
+                  <div>
+                    <div className="text-[11px] text-muted">{f.label}</div>
+                    <div className="font-medium text-sm">{f.value}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[var(--border)]">
+              {amenityItems.map((a) => (
+                <span
+                  key={a.label}
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    a.on
+                      ? "bg-accent/10 text-[#1a7f3d]"
+                      : "bg-[rgba(118,118,128,0.08)] text-muted"
+                  }`}
+                >
+                  {a.label}
+                </span>
+              ))}
+              {property.deposit && (
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  Kafolat: {formatPrice(property.deposit)}
+                </span>
+              )}
             </div>
           </div>
         </div>
 
-        <div>
-          <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 sticky top-20">
-            <div className="text-2xl font-bold">{formatPrice(listing.price)}</div>
-            <div className="text-xs text-[#6B7280] mt-0.5">
-              oyiga {property.min_rental_months ? `· kamida ${property.min_rental_months} oy` : ""}
+        <div className="min-w-0">
+          <div className="card p-5 sticky top-20 animate-fade-in-up" style={{ animationDelay: "0.08s" }}>
+            <div className="text-2xl font-bold text-foreground">{formatPrice(listing.price)}</div>
+            <div className="text-xs text-muted mt-0.5">
+              oyiga{property.min_rental_months ? ` · kamida ${property.min_rental_months} oy` : ""}
             </div>
 
-            <div className="mt-3 flex items-center gap-1.5 text-sm text-[#6B7280]">
+            <div className="mt-3 flex items-center gap-1.5 text-sm text-muted">
               <MapPin size={15} />
               {property.district}, {property.city}
               {property.location_accuracy === "approximate" && (
-                <span className="text-xs text-[#9CA3AF]">(taxminiy joylashuv)</span>
+                <span className="text-xs text-muted">(taxminiy joylashuv)</span>
               )}
             </div>
 
             {!isOwner && (
-              <div className="mt-4 space-y-2">
+              <div className="mt-5 space-y-2.5">
                 {user ? (
                   <button
                     onClick={startChat}
-                    className="w-full flex items-center justify-center gap-2 bg-[#16A34A] text-white font-semibold py-2.5 rounded-lg hover:bg-[#15803D]"
+                    className="btn btn-primary w-full py-3 text-sm"
                   >
                     <MessageCircle size={18} />
-                    Egasi bilan bog'lanish
+                    Egasi bilan bog&apos;lanish
                   </button>
                 ) : (
                   <Link
                     href={`/login?next=/elon/${listing.slug}`}
-                    className="w-full block text-center bg-[#16A34A] text-white font-semibold py-2.5 rounded-lg hover:bg-[#15803D]"
+                    className="btn btn-primary w-full py-3 text-sm"
                   >
-                    Bog'lanish uchun kiring
+                    Bog&apos;lanish uchun kiring
                   </Link>
                 )}
                 <button
                   onClick={toggleFavorite}
                   disabled={favoriteLoading}
-                  className={`w-full flex items-center justify-center gap-2 border font-semibold py-2.5 rounded-lg ${
+                  className={`btn w-full py-3 text-sm border ${
                     favorite
-                      ? "border-[#DC2626] text-[#DC2626]"
-                      : "border-[#E5E7EB] text-[#111827] hover:border-[#16A34A] hover:text-[#16A34A]"
+                      ? "border-danger text-danger bg-danger/5"
+                      : "border-[var(--border)] text-foreground hover:border-primary hover:text-primary"
                   }`}
                 >
                   <Heart size={18} fill={favorite ? "currentColor" : "none"} />
@@ -238,28 +276,28 @@ export default function ListingDetailPage() {
               </div>
             )}
 
-            <div className="mt-4 pt-4 border-t border-[#E5E7EB] flex items-center justify-between">
+            <div className="mt-5 pt-4 border-t border-[var(--border)] flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full bg-[#F3F4F6] flex items-center justify-center font-bold text-[#111827]">
-                  {(listing.owner.full_name || "E").charAt(0)}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-b from-[#0a84ff] to-[#007aff] text-white flex items-center justify-center font-bold">
+                  {(listing.owner.full_name || "E").charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <div className="font-medium text-sm">
                     {listing.owner.full_name || "Foydalanuvchi"}
                   </div>
-                  <div className="text-xs text-[#6B7280]">
-                    {listing.owner.active_listings} ta faol e'lon
+                  <div className="text-xs text-muted">
+                    {listing.owner.active_listings} ta faol e&apos;lon
                   </div>
                 </div>
               </div>
               {listing.verification.owner_profile_verified && (
-                <BadgeCheck size={20} className="text-[#16A34A]" />
+                <BadgeCheck size={20} className="text-accent" />
               )}
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[#E5E7EB] text-xs text-[#6B7280] flex items-center justify-between">
+            <div className="mt-4 pt-3 border-t border-[var(--border)] text-xs text-muted flex items-center justify-between">
               <span className="flex items-center gap-1">
-                <Eye size={13} /> {listing.views} ko'rish
+                <Eye size={13} /> {listing.views} ko&apos;rish
               </span>
               <span className="flex items-center gap-1">
                 <Calendar size={13} /> {formatRelative(listing.published_at)}
@@ -267,7 +305,7 @@ export default function ListingDetailPage() {
             </div>
 
             {listing.verification.risk_reasons.length > 0 && (
-              <div className="mt-4 bg-[#FFFBEB] border border-[#FDE68A] rounded-lg p-3 text-xs text-[#92400E]">
+              <div className="mt-4 bg-[#FFF7E6] border border-[#FFE3A8] rounded-lg p-3 text-xs text-[#8a5a00]">
                 <div className="font-semibold mb-1">Eslatma</div>
                 <ul className="list-disc pl-4 space-y-0.5">
                   {listing.verification.risk_reasons.map((r, i) => (
@@ -279,15 +317,6 @@ export default function ListingDetailPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Feature({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-2 border-b border-[#F3F4F6] py-1.5">
-      <span className="text-[#6B7280]">{label}</span>
-      <span className="font-medium text-right">{value}</span>
     </div>
   );
 }

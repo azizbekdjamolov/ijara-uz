@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -175,28 +175,27 @@ export default function WizardPage() {
     }
   };
 
-  const inputClass =
-    "w-full border border-[#E5E7EB] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#16A34A] bg-white";
-  const labelClass = "block text-xs font-semibold text-[#6B7280] mb-1";
+  const inputClass = "input";
+  const labelClass = "block text-xs font-semibold text-muted mb-1";
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-1">E'lon berish</h1>
-      <p className="text-sm text-[#6B7280] mb-6">
-        Barcha e'lonlar AI tekshiruvidan o'tadi
+    <div className="max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8">
+      <h1 className="text-2xl font-bold mb-1">E&apos;lon berish</h1>
+      <p className="text-sm text-muted mb-6">
+        Barcha e&apos;lonlar AI tekshiruvidan o&apos;tadi
       </p>
 
-      <ol className="flex items-center gap-1 mb-6 overflow-x-auto">
+      <ol className="flex items-center gap-1 mb-6 overflow-x-auto no-scrollbar">
         {STEP_TITLES.map((title, index) => (
           <li key={title} className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => index < step && setStep(index)}
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                 index < step
-                  ? "bg-[#16A34A] text-white"
+                  ? "bg-primary text-white"
                   : index === step
-                  ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]"
-                  : "bg-[#F3F4F6] text-[#9CA3AF]"
+                  ? "bg-primary/10 text-primary border border-primary"
+                  : "bg-[rgba(118,118,128,0.12)] text-muted"
               }`}
             >
               {index < step ? <Check size={13} /> : index + 1}
@@ -204,7 +203,7 @@ export default function WizardPage() {
             {index < STEP_TITLES.length - 1 && (
               <span
                 className={`h-0.5 w-5 ${
-                  index < step ? "bg-[#16A34A]" : "bg-[#E5E7EB]"
+                  index < step ? "bg-primary" : "bg-[var(--border)]"
                 }`}
               />
             )}
@@ -212,9 +211,9 @@ export default function WizardPage() {
         ))}
       </ol>
 
-      <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
+      <div className="card p-5 animate-fade-in-up" key={step}>
         {error && (
-          <div className="mb-4 bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] rounded-lg px-4 py-2 text-sm">
+          <div className="mb-4 bg-[#FFEBEA] border border-[#FFC7C5] text-danger rounded-lg px-4 py-2 text-sm">
             {error}
           </div>
         )}
@@ -222,7 +221,7 @@ export default function WizardPage() {
         {step === 0 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Type size={18} className="text-[#16A34A]" /> Mulk turini tanlang
+              <Type size={18} className="text-primary" /> Mulk turini tanlang
             </h2>
             <div className="grid grid-cols-2 gap-3">
               {PROPERTY_TYPES.map((t) => (
@@ -231,8 +230,8 @@ export default function WizardPage() {
                   onClick={() => set("property_type", t.value)}
                   className={`border rounded-xl py-4 text-center font-medium text-sm ${
                     draft.property_type === t.value
-                      ? "border-[#16A34A] bg-[#16A34A]/5 text-[#16A34A]"
-                      : "border-[#E5E7EB] hover:border-[#9CA3AF]"
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-[var(--border)] hover:border-[#9CA3AF]"
                   }`}
                 >
                   {t.label}
@@ -259,7 +258,7 @@ export default function WizardPage() {
         {step === 1 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <MapPin size={18} className="text-[#16A34A]" /> Joylashuv
+              <MapPin size={18} className="text-primary" /> Joylashuv
             </h2>
             <label className={labelClass}>Tuman</label>
             <select
@@ -271,7 +270,7 @@ export default function WizardPage() {
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>
-            <p className="mt-3 text-xs text-[#9CA3AF]">
+            <p className="mt-3 text-xs text-muted">
               Aniq manzil faqat egasi va xaridor muloqotida ko'rsatiladi.
               E'longa taxminiy joylashuv qo'shiladi.
             </p>
@@ -281,7 +280,7 @@ export default function WizardPage() {
         {step === 2 && (
           <div className="space-y-4">
             <h2 className="font-bold flex items-center gap-2">
-              <Type size={18} className="text-[#16A34A]" /> Tavsif
+              <Type size={18} className="text-primary" /> Tavsif
             </h2>
             <div>
               <label className={labelClass}>Sarlavha</label>
@@ -308,11 +307,11 @@ export default function WizardPage() {
         {step === 3 && (
           <div className="space-y-4">
             <h2 className="font-bold flex items-center gap-2">
-              <Bed size={18} className="text-[#16A34A]" /> Xususiyatlar
+              <Bed size={18} className="text-primary" /> Xususiyatlar
             </h2>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Maydon, m²</label>
+                <label className={labelClass}>Maydon, mВІ</label>
                 <input
                   type="number"
                   value={draft.area}
@@ -363,7 +362,7 @@ export default function WizardPage() {
         {step === 4 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Camera size={18} className="text-[#16A34A]" /> Rasmlar
+              <Camera size={18} className="text-primary" /> Rasmlar
             </h2>
             <input
               ref={fileInput}
@@ -375,13 +374,13 @@ export default function WizardPage() {
             />
             <button
               onClick={() => fileInput.current?.click()}
-              className="w-full border-2 border-dashed border-[#E5E7EB] rounded-xl py-10 text-center hover:border-[#16A34A] transition-colors"
+              className="w-full border-2 border-dashed border-[var(--border)] rounded-xl py-10 text-center hover:border-primary transition-colors"
             >
-              <Camera size={28} className="mx-auto text-[#9CA3AF] mb-2" />
-              <span className="text-sm font-medium text-[#16A34A]">
+              <Camera size={28} className="mx-auto text-muted mb-2" />
+              <span className="text-sm font-medium text-primary">
                 Rasmlar yuklash (kamida 1 ta)
               </span>
-              <span className="block text-xs text-[#9CA3AF] mt-1">
+              <span className="block text-xs text-muted mt-1">
                 JPG/PNG, 10 tagacha
               </span>
             </button>
@@ -390,14 +389,14 @@ export default function WizardPage() {
                 {images.map((img, i) => (
                   <li
                     key={`${img.name}-${i}`}
-                    className="flex items-center justify-between bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm"
+                    className="flex items-center justify-between bg-[rgba(118,118,128,0.04)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm"
                   >
                     <span className="truncate max-w-[70%]">{img.name}</span>
                     <button
                       onClick={() =>
                         setImages((prev) => prev.filter((_, index) => index !== i))
                       }
-                      className="text-[#DC2626] text-xs font-medium"
+                      className="text-danger text-xs font-medium"
                     >
                       O'chirish
                     </button>
@@ -411,7 +410,7 @@ export default function WizardPage() {
         {step === 5 && (
           <div className="space-y-4">
             <h2 className="font-bold flex items-center gap-2">
-              <Wallet size={18} className="text-[#16A34A]" /> Narx
+              <Wallet size={18} className="text-primary" /> Narx
             </h2>
             <div>
               <label className={labelClass}>Oylik ijara narxi, so'm</label>
@@ -424,7 +423,7 @@ export default function WizardPage() {
               />
             </div>
             <div>
-              <label className={labelClass}>Kafolat (depozit), so'm — ixtiyoriy</label>
+              <label className={labelClass}>Kafolat (depozit), so'm вЂ” ixtiyoriy</label>
               <input
                 type="number"
                 value={draft.deposit}
@@ -439,36 +438,36 @@ export default function WizardPage() {
         {step === 6 && (
           <div>
             <h2 className="font-bold mb-4 flex items-center gap-2">
-              <Tag size={18} className="text-[#16A34A]" /> Tasdiqlash
+              <Tag size={18} className="text-primary" /> Tasdiqlash
             </h2>
             <dl className="space-y-2 text-sm">
               <Row label="Sarlavha" value={draft.title} />
               <Row label="Tuman" value={draft.district} />
               <Row label="Turi" value={PROPERTY_TYPES.find((t) => t.value === draft.property_type)?.label ?? ""} />
               <Row label="Xonalar" value={`${draft.rooms} xona`} />
-              <Row label="Maydon" value={`${draft.area} m²`} />
+              <Row label="Maydon" value={`${draft.area} mВІ`} />
               <Row label="Narx" value={`${Number(draft.price).toLocaleString("ru-RU")} so'm/oy`} />
               <Row label="Rasmlar" value={`${images.length} ta`} />
             </dl>
-            <p className="mt-4 text-xs text-[#9CA3AF] bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg p-3">
+            <p className="mt-4 text-xs text-muted bg-[rgba(118,118,128,0.04)] border border-[var(--border)] rounded-lg p-3">
               E'lon AI tekshiruvidan o'tadi va bir necha daqiqada nashr qilinadi.
               Soxta yoki chalg'ituvchi e'lonlar rad etiladi.
             </p>
           </div>
         )}
 
-        <div className="flex justify-between mt-6 pt-4 border-t border-[#E5E7EB]">
+        <div className="flex justify-between mt-6 pt-4 border-t border-[var(--border)]">
           <button
             onClick={() => setStep((s) => Math.max(s - 1, 0))}
             disabled={step === 0}
-            className="flex items-center gap-1.5 text-sm font-medium text-[#6B7280] disabled:opacity-40 px-3 py-2"
+            className="flex items-center gap-1.5 text-sm font-medium text-muted disabled:opacity-40 px-3 py-2"
           >
             <ArrowLeft size={16} /> Orqaga
           </button>
           {step < 6 ? (
             <button
               onClick={next}
-              className="flex items-center gap-1.5 bg-[#16A34A] text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-[#15803D]"
+              className="btn btn-primary px-5 py-2.5 text-sm"
             >
               Davom etish <ArrowRight size={16} />
             </button>
@@ -476,7 +475,7 @@ export default function WizardPage() {
             <button
               onClick={submit}
               disabled={submitting}
-              className="flex items-center gap-1.5 bg-[#16A34A] text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-[#15803D] disabled:opacity-60"
+              className="btn btn-primary px-5 py-2.5 text-sm"
             >
               {submitting ? "Yuborilmoqda..." : "E'lonni joylash"}
             </button>
@@ -502,7 +501,7 @@ function Toggle({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="accent-[#16A34A]"
+        className="accent-primary"
       />
       {label}
     </label>
@@ -512,8 +511,8 @@ function Toggle({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <dt className="text-[#6B7280]">{label}</dt>
-      <dd className="font-medium text-right">{value || "—"}</dd>
+      <dt className="text-muted">{label}</dt>
+      <dd className="font-medium text-right">{value || "вЂ”"}</dd>
     </div>
   );
 }

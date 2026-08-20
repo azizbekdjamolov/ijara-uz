@@ -1,7 +1,7 @@
 import logging
 
 from django.contrib.auth import authenticate, get_user_model
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -22,6 +22,11 @@ from apps.accounts.services.verification_service import (
     VerificationCooldownError,
     VerificationService,
     VerificationServiceError,
+)
+from apps.accounts.services.telegram_service import (
+    TelegramAuthError,
+    get_or_create_telegram_user,
+    validate_telegram_data,
 )
 from apps.core.throttles import AuthAnonRateThrottle
 
@@ -59,8 +64,11 @@ class RegisterView(generics.CreateAPIView):
         except VerificationServiceError as exc:
             logger.warning("register: code not sent for %s: %s", user.phone, exc)
 
+        refresh = RefreshToken.for_user(user)
         return Response(
             {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
                 "user": UserSerializer(user).data,
                 "message": "Ro'yxatdan o'tdingiz. Telefonni tasdiqlash kodi yuborildi.",
             },
@@ -92,6 +100,42 @@ class LoginView(APIView):
                 {"message": UZ_ERROR_MESSAGES["inactive"]},
                 status=status.HTTP_403_FORBIDDEN,
             )
+        if user.is_banned:
+            return Response(
+                {"message": UZ_ERROR_MESSAGES["banned"]},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": UserSerializer(user).data,
+            }
+        )
+
+
+class TelegramLoginView(APIView):
+    """Authenticate with a verified Telegram Login Widget payload."""
+
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [AuthAnonRateThrottle]
+
+    def post(self, request):
+        try:
+            trusted = validate_telegram_data(request.data)
+            user = get_or_create_telegram_user(**trusted)
+        except TelegramAuthError as exc:
+            return Response(
+                {"message": str(exc)}, status=status.HTTP_401_UNAUTHORIZED
+            )
+        except serializers.ValidationError as exc:
+            return Response(
+                {"message": "Telegram ma'lumotlari noto'g'ri.", "details": exc.detail},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if user.is_banned:
             return Response(
                 {"message": UZ_ERROR_MESSAGES["banned"]},

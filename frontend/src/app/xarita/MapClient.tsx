@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -38,12 +38,8 @@ export default function MapClient() {
 
   useEffect(() => {
     let cancelled = false;
-    const params = new URLSearchParams();
-    params.set("price_max", "6000000");
     api
-      .get<{ count: number; markers: MapMarker[] }>(
-        `/search/map/?${params.toString()}`
-      )
+      .get<{ count: number; markers: MapMarker[] }>(`/search/map/?page_size=300`)
       .then((data) => {
         if (!cancelled) setMarkers(data.markers);
       })
@@ -77,18 +73,18 @@ export default function MapClient() {
               <Popup>
                 <div className="text-sm min-w-[160px]">
                   <div className="font-bold">{formatCompactPrice(marker.price)}</div>
-                  <div className="text-[#374151] truncate max-w-[180px]">
+                  <div className="text-foreground/70 truncate max-w-[180px]">
                     {marker.title}
                   </div>
-                  <div className="text-xs text-[#6B7280] mt-0.5">
+                  <div className="text-xs text-muted mt-0.5">
                     {marker.district}
-                    {marker.rooms ? ` · ${marker.rooms} xona` : ""}
+                    {marker.rooms ? ` В· ${marker.rooms} xona` : ""}
                   </div>
                   <Link
                     href={`/elon/${marker.slug}`}
-                    className="inline-block mt-2 text-[#16A34A] font-semibold hover:underline"
+                    className="inline-block mt-2 text-primary font-semibold hover:underline"
                   >
-                    Ko'rish →
+                    Ko'rish в†’
                   </Link>
                 </div>
               </Popup>
@@ -101,14 +97,14 @@ export default function MapClient() {
           </div>
         )}
         {error && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-white rounded-full px-4 py-1.5 text-sm text-[#DC2626] shadow-md z-[1000]">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-white rounded-full px-4 py-1.5 text-sm text-danger shadow-md z-[1000]">
             {error}
           </div>
         )}
       </div>
-      <aside className="md:w-80 lg:w-96 bg-white border-t md:border-t-0 md:border-l border-[#E5E7EB] overflow-y-auto p-4 max-h-[40vh] md:max-h-none">
+      <aside className="md:w-80 lg:w-96 bg-white border-t md:border-t-0 md:border-l border-[var(--border)] overflow-y-auto p-4 max-h-[40vh] md:max-h-none">
         <h2 className="font-bold mb-3 flex items-center gap-2">
-          <MapPin size={16} className="text-[#16A34A]" />
+          <MapPin size={16} className="text-primary" />
           Xaritadagi e'lonlar ({markers.length})
         </h2>
         <div className="space-y-2">
@@ -116,21 +112,21 @@ export default function MapClient() {
             <Link
               key={marker.id}
               href={`/elon/${marker.slug}`}
-              className="block bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg p-3 hover:border-[#16A34A] transition-colors"
+              className="block bg-[rgba(118,118,128,0.04)] border border-[var(--border)] rounded-lg p-3 hover:border-primary transition-colors"
             >
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm">
                   {formatPrice(marker.price)}
                 </span>
-                <span className="text-xs text-[#6B7280]">{marker.district}</span>
+                <span className="text-xs text-muted">{marker.district}</span>
               </div>
-              <div className="text-[13px] text-[#374151] truncate mt-0.5">
+              <div className="text-[13px] text-foreground/70 truncate mt-0.5">
                 {marker.title}
               </div>
             </Link>
           ))}
           {markers.length === 0 && !loading && (
-            <div className="text-center py-6 text-[#9CA3AF] text-sm">
+            <div className="text-center py-6 text-muted text-sm">
               Bu hududda e'lonlar yo'q
             </div>
           )}

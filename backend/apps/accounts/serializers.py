@@ -70,6 +70,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
     role_display = serializers.CharField(source="get_role_display", read_only=True)
+    full_name = serializers.CharField(source="profile.full_name", read_only=True, default="")
+    city = serializers.CharField(source="profile.city", read_only=True, default="")
+    trust_tier = serializers.CharField(source="profile.trust_tier", read_only=True)
 
     class Meta:
         model = User
@@ -77,12 +80,16 @@ class UserSerializer(serializers.ModelSerializer):
             "id",
             "phone",
             "email",
+            "telegram_username",
             "role",
             "role_display",
             "is_phone_verified",
             "is_email_verified",
             "is_profile_verified",
             "date_joined",
+            "full_name",
+            "city",
+            "trust_tier",
             "profile",
         )
         read_only_fields = fields

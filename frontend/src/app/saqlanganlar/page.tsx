@@ -49,22 +49,22 @@ export default function FavoritesPage() {
   if (!user) return null;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-xl font-bold mb-4">Saqlanganlar</h1>
+    <div className="max-w-5xl mx-auto px-4 py-8 pb-24 md:pb-8">
+      <h1 className="text-2xl font-bold mb-4">Saqlanganlar</h1>
       {error && (
-        <div className="mb-4 bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] rounded-lg px-4 py-2 text-sm">
+        <div className="mb-4 bg-[#FFEBEA] border border-[#FFC7C5] text-danger rounded-lg px-4 py-2 text-sm">
           {error}
         </div>
       )}
       {listings.length === 0 ? (
-        <div className="text-center py-16 text-[#9CA3AF]">
-          Hozircha saqlangan e'lonlar yo'q.
-          <Link href="/elonlar" className="block mt-2 text-[#16A34A] font-medium">
-            E'lonlarni ko'rish
+        <div className="text-center py-16 text-muted animate-fade-in">
+          Hozircha saqlangan e&apos;lonlar yo&apos;q.
+          <Link href="/elonlar" className="block mt-2 text-primary font-semibold">
+            E&apos;lonlarni ko&apos;rish
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 stagger">
           {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
