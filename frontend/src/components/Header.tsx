@@ -132,9 +132,9 @@ export default function Header() {
               </Link>
               <Link
                 href="/register"
-                className="sm:hidden btn btn-primary px-4 py-2 text-sm"
+                className="hidden sm:flex text-sm text-muted hover:text-foreground px-1.5 transition-colors"
               >
-                Kirish
+                Ro&apos;yxatdan o&apos;tish
               </Link>
             </div>
           )}
