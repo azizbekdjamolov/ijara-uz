@@ -56,11 +56,19 @@ export default function ListingDetailPage() {
 
   const toggleFavorite = async () => {
     if (!listing) return;
+    if (!user) {
+      router.push(`/login?next=/elon/${listing.slug}`);
+      return;
+    }
     setFavoriteLoading(true);
     try {
       await api.post(`/listings/favorites/toggle/${listing.id}/`);
       setFavorite((v) => !v);
     } catch (e) {
+      if (e instanceof ApiRequestError && e.status === 401) {
+        router.push(`/login?next=/elon/${listing.slug}`);
+        return;
+      }
       setMessage(e instanceof ApiRequestError ? e.message : "Xatolik yuz berdi");
     } finally {
       setFavoriteLoading(false);
