@@ -46,7 +46,6 @@ function buildPin(price: number): HTMLElement {
   const el = document.createElement("button");
   el.className =
     "maplibregl-marker-btn flex flex-col items-center justify-center cursor-pointer border-0 bg-transparent p-0";
-  el.style.cssText = "transform:translateY(-50%);";
   el.innerHTML = `
     <span class="px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap"
           style="background:linear-gradient(180deg,#e8c869,#d4af37);color:#1a1405;box-shadow:0 4px 14px rgba(212,175,55,0.45);border:1px solid rgba(26,20,5,0.35)">
