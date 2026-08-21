@@ -14,14 +14,13 @@ declare global {
   }
 }
 
-let widgetInstalled = false;
-
 export default function TelegramLoginButton() {
   const { telegramLogin } = useAuth();
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [widgetFailed, setWidgetFailed] = useState(false);
 
   const handleAuth = async (user: Record<string, unknown>) => {
     setLoading(true);
@@ -47,8 +46,7 @@ export default function TelegramLoginButton() {
 
     window.onTelegramAuth = handleAuth;
 
-    if (widgetInstalled) return;
-    widgetInstalled = true;
+    if (container.childElementCount > 0) return;
 
     const script = document.createElement("script");
     script.async = true;
@@ -60,7 +58,13 @@ export default function TelegramLoginButton() {
     script.setAttribute("data-onauth", "window.onTelegramAuth(user)");
     container.appendChild(script);
 
+    const failTimer = window.setTimeout(
+      () => setWidgetFailed(true),
+      8000
+    );
+
     return () => {
+      window.clearTimeout(failTimer);
       window.onTelegramAuth = undefined;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,6 +89,16 @@ export default function TelegramLoginButton() {
         <div className="text-xs text-danger text-center">{error}</div>
       )}
       <div ref={containerRef} />
+      {widgetFailed && !loading && (
+        <a
+          href={`https://t.me/${BOT_USERNAME}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-gold font-medium hover:text-gold-light transition-colors"
+        >
+          Bot ochilmasa, Telegram&apos;da @{BOT_USERNAME} ni oching
+        </a>
+      )}
     </div>
   );
 }

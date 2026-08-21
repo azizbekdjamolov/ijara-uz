@@ -439,7 +439,7 @@ body::after {
   color: var(--text) !important;
   border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 14px !important;
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: var(--shadow-md), 0 0 20px rgba(0,0,0,0.4) !important;
   padding: 12px 14px !important;
 }
 
@@ -456,18 +456,39 @@ body::after {
   border-top-color: #12162a !important;
 }
 
+.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: #12162a !important;
+}
+
+.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: #12162a !important;
+}
+
 .maplibregl-popup-close-button {
   color: var(--muted) !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.maplibregl-popup-close-button:hover {
+  color: var(--gold) !important;
 }
 
 .maplibregl-ctrl-group {
   background: #12162a !important;
   border: 1px solid rgba(212, 175, 55, 0.3) !important;
   box-shadow: var(--shadow-md) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
 }
 
 .maplibregl-ctrl-group button {
   background: transparent !important;
+  border-color: rgba(212, 175, 55, 0.1) !important;
+}
+
+.maplibregl-ctrl-group button:hover {
+  background: rgba(212, 175, 55, 0.1) !important;
 }
 
 .maplibregl-ctrl-group button span {
@@ -477,6 +498,9 @@ body::after {
 .maplibregl-ctrl-attrib {
   background: rgba(18, 22, 42, 0.85) !important;
   color: var(--muted) !important;
+  border-radius: 8px !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
 }
 
 .maplibregl-ctrl-attrib a {
@@ -486,5 +510,26 @@ body::after {
 .maplibregl-ctrl-scale {
   background: rgba(18, 22, 42, 0.85) !important;
   color: var(--muted) !important;
-  border-color: var(--muted) !important;
+  border-color: rgba(212, 175, 55, 0.2) !important;
+  font-size: 10px !important;
+  border-radius: 4px !important;
+  padding: 1px 4px !important;
+}
+
+/* Map marker button reset */
+.maplibregl-marker-btn {
+  outline: none !important;
+}
+
+.maplibregl-marker-btn:focus {
+  outline: none !important;
+}
+
+/* Dark filter for OSM tiles */
+.map-dark-filter .maplibregl-canvas {
+  filter: brightness(0.55) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.25) brightness(0.65);
+}
+
+.map-dark-filter .maplibregl-control-container {
+  filter: none !important;
 }

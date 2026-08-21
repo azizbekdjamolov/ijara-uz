@@ -9,10 +9,13 @@ import {
   MessageCircle,
   Plus,
   Search,
+  Send,
   User,
 } from "lucide-react";
 
 import { useAuth } from "@/lib/auth-context";
+
+const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "";
 
 export default function Header() {
   const { user, loading, logout } = useAuth();
@@ -81,6 +84,18 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-1.5">
+          {BOT_USERNAME && (
+            <a
+              href={`https://t.me/${BOT_USERNAME}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg hover:bg-white/5 text-muted hover:text-gold transition-colors"
+              title={`Telegram: @${BOT_USERNAME}`}
+              aria-label="Telegram bot"
+            >
+              <Send size={20} />
+            </a>
+          )}
           <Link
             href="/elon-joylash"
             className="hidden sm:flex items-center gap-1.5 btn btn-primary px-4.5 py-2 text-sm"
