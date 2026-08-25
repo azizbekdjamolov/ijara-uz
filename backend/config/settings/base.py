@@ -240,8 +240,12 @@ else:
 # ---------------------------------------------------------------------------
 # App-specific
 # ---------------------------------------------------------------------------
-# Verification code provider for SMS: console (dev) | later real providers.
+# Verification code provider for SMS: console (dev) | eskiz (prod).
 SMS_PROVIDER = env("SMS_PROVIDER", default="console")
+ESKIZ_EMAIL = env("ESKIZ_EMAIL", default="")
+ESKIZ_PASSWORD = env("ESKIZ_PASSWORD", default="")
+ESKIZ_BASE_URL = env("ESKIZ_BASE_URL", default="https://notify.eskiz.uz")
+SMS_SENDER = env("SMS_SENDER", default="4546")  # Eskiz sender name
 
 # Gemini AI provider (optional). Without a key the deterministic rules
 # provider is used; the platform never depends on external AI availability.

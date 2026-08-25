@@ -18,6 +18,7 @@ interface AuthState {
   loading: boolean;
   login: (identifier: string, password: string) => Promise<void>;
   register: (phone: string, password: string, fullName: string) => Promise<void>;
+  registerComplete: (phone: string, password: string) => Promise<void>;
   telegramLogin: (data: Record<string, unknown>) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -61,9 +62,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (phone: string, password: string, fullName: string) => {
+      // 1-bosqich: telefon → OTP yuboriladi, token berilmaydi
+      // password optional - 3-bosqichda ham o'rnatilishi mumkin (spec)
+      await api.post<{ phone: string; message: string }>("/auth/register/", {
+        phone,
+        password: password || undefined,
+        full_name: fullName,
+      });
+    },
+    []
+  );
+
+  const registerComplete = useCallback(
+    async (phone: string, password: string) => {
+      // 3-4 bosqich: OTP tasdiqlangandan keyin parol o'rnatiladi va token beriladi
       const data = await api.post<{ access: string; refresh: string; user: UserProfile }>(
-        "/auth/register/",
-        { phone, password, full_name: fullName }
+        "/auth/register/complete/",
+        { phone, password }
       );
       setTokens(data.access, data.refresh);
       setUser(data.user);
@@ -89,8 +104,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, telegramLogin, logout, refreshUser }),
-    [user, loading, login, register, telegramLogin, logout, refreshUser]
+    () => ({ user, loading, login, register, registerComplete, telegramLogin, logout, refreshUser }),
+    [user, loading, login, register, registerComplete, telegramLogin, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

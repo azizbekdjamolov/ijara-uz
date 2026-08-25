@@ -113,20 +113,47 @@ export interface UserProfile {
   telegram_username?: string;
 }
 
+export interface ConversationUser {
+  id: string;
+  full_name: string;
+  is_phone_verified: boolean;
+  is_profile_verified: boolean;
+}
+
+export interface ConversationListing {
+  id: string;
+  slug: string;
+  title: string;
+  price: number;
+}
+
+export interface ConversationLastMessage {
+  text: string;
+  sender_id: string;
+  created_at: string;
+  is_read: boolean;
+  has_image: boolean;
+}
+
 export interface Conversation {
   id: string;
-  listing: ListingSummary;
-  owner: OwnerSummary;
-  tenant: OwnerSummary;
-  last_message: string | null;
-  last_message_at: string | null;
+  listing_id: string;
+  listing: ConversationListing;
+  other_user: ConversationUser;
+  last_message: ConversationLastMessage | null;
+  unread: number;
+  blocked_by: string | null;
+  created_at: string;
   updated_at: string;
 }
 
 export interface Message {
   id: string;
-  sender: string;
+  sender_id: string;
+  sender_name: string;
   text: string;
+  image: string | null;
+  is_read: boolean;
   created_at: string;
 }
 

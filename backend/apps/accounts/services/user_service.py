@@ -18,8 +18,14 @@ class UserService:
 
     @classmethod
     @transaction.atomic
-    def register(cls, *, phone: str, password: str, full_name: str = "", email: str | None = None) -> User:
-        user = User.objects.create_user(phone=phone, password=password)
+    def register(cls, *, phone: str, password: str | None = None, full_name: str = "", email: str | None = None) -> User:
+        # Password optional - agar berilmasa 3-bosqichda o'rnatiladi (spec bo'yicha)
+        if password:
+            user = User.objects.create_user(phone=phone, password=password)
+        else:
+            user = User.objects.create_user(phone=phone, password=None)
+            user.set_unusable_password()
+            user.save(update_fields=["password"])
         if email:
             user.email = email
             user.save(update_fields=["email"])

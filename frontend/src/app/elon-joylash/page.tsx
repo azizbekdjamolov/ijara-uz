@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -17,6 +18,15 @@ import {
 import { api, ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
+const LocationPicker = dynamic(() => import("@/components/LocationPicker"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-64 rounded-xl border border-[rgba(212,175,55,0.25)] flex items-center justify-center text-sm text-muted">
+      Xarita yuklanmoqda...
+    </div>
+  ),
+});
+
 const PROPERTY_TYPES = [
   { value: "apartment", label: "Kvartira" },
   { value: "house", label: "Uy" },
@@ -31,10 +41,29 @@ const DISTRICTS = [
   "Yashnobod", "Yunusobod",
 ];
 
+const DISTRICT_CENTERS: Record<string, [number, number]> = {
+  Bektemir: [69.3362, 41.2119],
+  Chilonzor: [69.1784, 41.2757],
+  Mirabod: [69.2918, 41.2875],
+  "Mirzo Ulug'bek": [69.2884, 41.3406],
+  Olmazor: [69.2263, 41.3672],
+  Sergeli: [69.2194, 41.1994],
+  Shayxontohur: [69.2242, 41.3275],
+  Uchtepa: [69.1642, 41.2989],
+  Yakkasaroy: [69.2442, 41.2806],
+  Yangihayot: [69.2819, 41.2364],
+  Yashnobod: [69.3492, 41.2889],
+  Yunusobod: [69.2906, 41.3694],
+};
+
+const TASHKENT_CENTER: [number, number] = [69.2797, 41.3111];
+
 interface Draft {
   property_type: string;
   rooms: string;
   district: string;
+  latitude: number | null;
+  longitude: number | null;
   title: string;
   description: string;
   price: string;
@@ -56,6 +85,8 @@ const INITIAL_DRAFT: Draft = {
   property_type: "apartment",
   rooms: "2",
   district: "Chilonzor",
+  latitude: null,
+  longitude: null,
   title: "",
   description: "",
   price: "",
@@ -95,8 +126,17 @@ export default function WizardPage() {
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
+  const mapCenter = useMemo<[number, number]>(
+    () => DISTRICT_CENTERS[draft.district] ?? TASHKENT_CENTER,
+    [draft.district]
+  );
+
   const validStep = (): string | null => {
     switch (step) {
+      case 1:
+        if (draft.latitude == null || draft.longitude == null)
+          return "Xaritada uy joylashuvini belgilang — xaridor haqiqiy joylashuvni ko'radi";
+        return null;
       case 2:
         if (draft.title.trim().length < 10)
           return "Sarlavha kamida 10 belgidan iborat bo'lishi kerak";
@@ -135,6 +175,8 @@ export default function WizardPage() {
     setSubmitting(true);
     setError(null);
     try {
+      const hasPin = draft.latitude != null && draft.longitude != null;
+      const jitter = () => Number(((Math.random() - 0.5) * 0.003).toFixed(6));
       const created = await api.post<{ id: string }>("/listings/", {
         title: draft.title,
         price: Number(draft.price),
@@ -157,6 +199,8 @@ export default function WizardPage() {
           description: draft.description,
           city: "Toshkent",
           district: draft.district,
+          latitude: hasPin ? Number((draft.latitude! + jitter()).toFixed(6)) : null,
+          longitude: hasPin ? Number((draft.longitude! + jitter()).toFixed(6)) : null,
           location_accuracy: "approximate",
         },
       });
@@ -263,16 +307,38 @@ export default function WizardPage() {
             <label className={labelClass}>Tuman</label>
             <select
               value={draft.district}
-              onChange={(e) => set("district", e.target.value)}
+              onChange={(e) => {
+                set("district", e.target.value);
+                set("latitude", null);
+                set("longitude", null);
+              }}
               className={inputClass}
             >
               {DISTRICTS.map((d) => (
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>
+
+            <div className="mt-4">
+              <label className={labelClass}>
+                Uy joylashuvi {draft.latitude != null && (
+                  <span className="text-gold font-normal">— belgilandi</span>
+                )}
+              </label>
+              <LocationPicker
+                lat={draft.latitude}
+                lng={draft.longitude}
+                center={mapCenter}
+                onChange={(lat, lng) => {
+                  set("latitude", lat);
+                  set("longitude", lng);
+                }}
+              />
+            </div>
             <p className="mt-3 text-xs text-muted">
-              Aniq manzil faqat egasi va xaridor muloqotida ko'rsatiladi.
-              E'longa taxminiy joylashuv qo'shiladi.
+              Xaritada aniq joyni belgilang. E&apos;londa u qo&apos;shni
+              uchastka ichida taxminiy holatda ko&apos;rsatiladi — aniq manzil
+              faqat siz va ijarachi muloqotida ochiladi.
             </p>
           </div>
         )}
@@ -311,7 +377,7 @@ export default function WizardPage() {
             </h2>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Maydon, mВІ</label>
+                <label className={labelClass}>Maydon, m²</label>
                 <input
                   type="number"
                   value={draft.area}
@@ -423,7 +489,7 @@ export default function WizardPage() {
               />
             </div>
             <div>
-              <label className={labelClass}>Kafolat (depozit), so'm вЂ” ixtiyoriy</label>
+              <label className={labelClass}>Kafolat (depozit), so'm — ixtiyoriy</label>
               <input
                 type="number"
                 value={draft.deposit}
@@ -443,9 +509,13 @@ export default function WizardPage() {
             <dl className="space-y-2 text-sm">
               <Row label="Sarlavha" value={draft.title} />
               <Row label="Tuman" value={draft.district} />
+              <Row
+                label="Joylashuv"
+                value={draft.latitude != null ? "Xaritada belgilangan" : "Belgilanmagan"}
+              />
               <Row label="Turi" value={PROPERTY_TYPES.find((t) => t.value === draft.property_type)?.label ?? ""} />
               <Row label="Xonalar" value={`${draft.rooms} xona`} />
-              <Row label="Maydon" value={`${draft.area} mВІ`} />
+              <Row label="Maydon" value={`${draft.area} m²`} />
               <Row label="Narx" value={`${Number(draft.price).toLocaleString("ru-RU")} so'm/oy`} />
               <Row label="Rasmlar" value={`${images.length} ta`} />
             </dl>
@@ -512,7 +582,7 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-muted">{label}</dt>
-      <dd className="font-medium text-right">{value || "вЂ”"}</dd>
+      <dd className="font-medium text-right">{value || "—"}</dd>
     </div>
   );
 }

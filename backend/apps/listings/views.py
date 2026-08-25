@@ -106,16 +106,23 @@ class PublicListingView(generics.RetrieveAPIView):
 
 
 class MyListingListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     serializer_class = ListingDetailSerializer
 
     def get_queryset(self):
-        return (
+        user_id = self.request.query_params.get("user_id")
+        qs = (
             Listing.objects.select_related("prop", "owner", "owner__profile", "risk")
-            .filter(owner=self.request.user)
             .exclude(status=ListingStatus.DELETED)
             .prefetch_related("images", "favorites", "ai_analyses")
         )
+        if user_id:
+            qs = qs.filter(owner_id=user_id, status=ListingStatus.PUBLISHED)
+        else:
+            if not self.request.user.is_authenticated:
+                return qs.none()
+            qs = qs.filter(owner=self.request.user)
+        return qs
 
 
 class ListingImagesView(generics.GenericAPIView):
@@ -215,8 +222,46 @@ class ReportCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ReportCreateSerializer
 
+    AUTO_REVIEW_REPORT_THRESHOLD = 3
+
     def perform_create(self, serializer):
-        serializer.save(reporter=self.request.user)
+        report = serializer.save(reporter=self.request.user)
+        self._maybe_flag_listing(report.listing)
+
+    def _maybe_flag_listing(self, listing) -> None:
+        """3+ yangi shikoyat bo'lsa e'lonni qayta tekshiruvga o'tkaz."""
+        from django.contrib.auth import get_user_model
+        from apps.listings.models import ListingStatus
+        from apps.listings.services.listing_service import ListingService, InvalidStatusTransition
+        from apps.notifications.services.notification_service import NotificationService
+
+        new_reports = listing.reports.filter(status="new").count()
+        if new_reports < self.AUTO_REVIEW_REPORT_THRESHOLD:
+            return
+        if not ListingService.can_transition(listing.status, ListingStatus.NEEDS_REVIEW):
+            return
+        try:
+            ListingService.transition(
+                listing,
+                ListingStatus.NEEDS_REVIEW,
+                note=f"{new_reports} ta shikoyat tushdi — avtomatik qayta tekshiruv",
+            )
+        except InvalidStatusTransition:
+            return
+        User = get_user_model()
+        for moderator in User.objects.filter(
+            role__in=["moderator", "admin"], is_active=True
+        ):
+            NotificationService.create(
+                user=moderator,
+                type_="report_update",
+                title="E'lon shikoyatlar soni bo'yicha bayroqlandi",
+                body=(
+                    f"'{listing.title}' e'loniga {new_reports} ta shikoyat tushdi "
+                    "va qayta tekshiruv navbatiga o'tkazildi."
+                ),
+                data={"listing_id": str(listing.id)},
+            )
 
 
 class ReportListView(generics.ListAPIView):

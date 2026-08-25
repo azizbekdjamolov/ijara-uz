@@ -1,3 +1,4 @@
+import contextlib
 import logging
 
 from django.core.cache import cache
@@ -35,18 +36,29 @@ class SettingsService:
 
     @classmethod
     def get(cls, key: str, default=None):
-        if key not in DEFAULTS and default is None:
-            logger.warning("Unknown site setting requested: %s", key)
-        cache_key = SETTINGS_CACHE_KEY.format(key=key)
-        value = cache.get(cache_key)
-        if value is not None:
-            return value
         try:
-            value = SiteSetting.objects.get(key=key).value
-        except SiteSetting.DoesNotExist:
-            value = DEFAULTS.get(key, default)
-        cache.set(cache_key, value, SETTINGS_CACHE_TTL)
-        return value
+            if key not in DEFAULTS and default is None:
+                logger.warning("Unknown site setting requested: %s", key)
+            cache_key = SETTINGS_CACHE_KEY.format(key=key)
+            try:
+                value = cache.get(cache_key)
+                if value is not None:
+                    return value
+            except Exception as exc:
+                logger.warning("Settings cache get xatolik (qulash emas): %s", exc)
+            try:
+                value = SiteSetting.objects.get(key=key).value
+            except SiteSetting.DoesNotExist:
+                value = DEFAULTS.get(key, default)
+            except Exception as exc:
+                logger.warning("Settings DB xatolik, default qaytariladi: %s key=%s", exc, key)
+                return DEFAULTS.get(key, default)
+            with contextlib.suppress(Exception):
+                cache.set(cache_key, value, SETTINGS_CACHE_TTL)
+            return value
+        except Exception as exc:
+            logger.exception("SettingsService.get kutilmagan xatolik: %s", exc)
+            return DEFAULTS.get(key, default)
 
     @classmethod
     def set(cls, key: str, value, description: str = "") -> SiteSetting:

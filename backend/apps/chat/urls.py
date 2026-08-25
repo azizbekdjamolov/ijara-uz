@@ -3,6 +3,7 @@ from django.urls import path
 from apps.chat import views
 
 urlpatterns = [
+    path("unread-count/", views.UnreadCountView.as_view(), name="chat-unread-count"),
     path("conversations/", views.ConversationListCreateView.as_view(), name="chat-conversations"),
     path("conversations/<uuid:pk>/messages/", views.ConversationMessagesView.as_view(), name="chat-messages"),
     path("conversations/<uuid:pk>/messages/create/", views.MessageCreateView.as_view(), name="chat-send"),

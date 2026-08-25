@@ -1,0 +1,28 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.50.85:3000
+- Environments: .env
+✓ Ready in 1258ms
+✓ Running next.config.ts took 91ms
+⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result.
+
+○ Compiling / ...
+ GET / 200 in 6.8s (next.js: 6.1s, application-code: 671ms)
+ GET /login 200 in 584ms (next.js: 502ms, application-code: 82ms)
+ GET /register 200 in 529ms (next.js: 434ms, application-code: 95ms)
+ GET /xabarlar 200 in 515ms (next.js: 435ms, application-code: 80ms)
+ GET /moderatsiya 200 in 472ms (next.js: 389ms, application-code: 83ms)
+ GET /profil 200 in 523ms (next.js: 441ms, application-code: 82ms)
+ GET /saqlanganlar 200 in 450ms (next.js: 368ms, application-code: 81ms)
+ GET /elonlar 200 in 483ms (next.js: 391ms, application-code: 92ms)
+Persisting failed: Unable to write SST file 00000003.sst
+
+Caused by:
+    0: Failed to write small value block
+    1: Failed to write block data
+    2: failed to write to file `\\?\C:\Users\nozim\OneDrive\Рабочий стол\m.m\frontend\.next\dev\cache\turbopack\v16.3.1-3d32eb87\00000003.sst`: Недостаточно места на диске. (os error 112)
+Persisting is disabled for this session due to an unrecoverable error. Stopping the background persisting process.

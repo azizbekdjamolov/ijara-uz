@@ -1,8 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
-    <footer className="mt-12 safe-bottom pb-20 md:pb-8 border-t border-[rgba(212,175,55,0.12)] bg-[#07090f]/60 backdrop-blur-xl">
+    <footer className="mt-12 safe-bottom pb-20 md:pb-8 border-t backdrop-blur-xl transition-colors"
+      style={{ borderColor: "var(--header-border)", backgroundColor: "var(--footer-bg)" }}>
       <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -14,61 +20,61 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-muted">
-            O&apos;zbekistonda uy-joy ijarasi bo&apos;yicha ishonchli platforma.
+            {t("footer.about")}
           </p>
         </div>
         <div>
-          <h3 className="font-semibold mb-3 text-foreground">Ijara</h3>
+          <h3 className="font-semibold mb-3 text-foreground">{t("nav.listings")}</h3>
           <ul className="space-y-2 text-muted">
             <li>
               <Link href="/elonlar" className="hover:text-gold transition-colors">
-                E&apos;lonlar
+                {t("footer.listings")}
               </Link>
             </li>
             <li>
               <Link href="/xarita" className="hover:text-gold transition-colors">
-                Xarita
+                {t("footer.map")}
               </Link>
             </li>
             <li>
               <Link href="/elon-joylash" className="hover:text-gold transition-colors">
-                E&apos;lon berish
+                {t("footer.postListing")}
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold mb-3 text-foreground">Foydalanuvchi</h3>
+          <h3 className="font-semibold mb-3 text-foreground">{t("footer.userSection")}</h3>
           <ul className="space-y-2 text-muted">
             <li>
               <Link href="/login" className="hover:text-gold transition-colors">
-                Kirish
+                {t("nav.login")}
               </Link>
             </li>
             <li>
               <Link href="/register" className="hover:text-gold transition-colors">
-                Ro&apos;yxatdan o&apos;tish
+                {t("nav.register")}
               </Link>
             </li>
             <li>
               <Link href="/saqlanganlar" className="hover:text-gold transition-colors">
-                Saqlanganlar
+                {t("nav.favorites")}
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="font-semibold mb-3 text-foreground">Yordam</h3>
+          <h3 className="font-semibold mb-3 text-foreground">{t("footer.helpSection")}</h3>
           <ul className="space-y-2 text-muted">
-            <li>Xavfsizlik qoidalari</li>
-            <li>Aloqa: +998 90 123 45 67</li>
-            <li>support@ijara.uz</li>
+            <li>{t("footer.safetyRules")}</li>
+            <li>{t("footer.phone")}</li>
+            <li>{t("footer.email")}</li>
           </ul>
         </div>
       </div>
       <div className="gold-line mx-auto max-w-3xl" />
       <div className="py-5 text-center text-xs text-muted">
-        © {new Date().getFullYear()} Ijara.uz — Barcha huquqlar himoyalangan
+        © {new Date().getFullYear()} Ijara.uz — {t("footer.copyright")}
       </div>
     </footer>
   );

@@ -28,18 +28,37 @@ export function clearTokens(): void {
 async function refreshAccess(): Promise<string | null> {
   const refresh = getRefreshToken();
   if (!refresh) return null;
-  const response = await fetch(`${API_URL}/auth/refresh/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh }),
-  });
-  if (!response.ok) {
-    clearTokens();
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+    const response = await fetch(`${API_URL}/auth/refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh }),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (!response.ok) {
+      clearTokens();
+      return null;
+    }
+    let data: { access?: string } = {};
+    try {
+      data = await response.json();
+    } catch {
+      clearTokens();
+      return null;
+    }
+    if (!data.access) {
+      clearTokens();
+      return null;
+    }
+    setTokens(data.access, refresh);
+    return data.access;
+  } catch {
+    // Tarmoq uzildi yoki timeout - qulash emas
     return null;
   }
-  const data = await response.json();
-  setTokens(data.access, refresh);
-  return data.access;
 }
 
 export interface ApiError {
@@ -70,7 +89,17 @@ async function request<T>(
   const token = getAccessToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+  let response: Response;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    response = await fetch(`${API_URL}${path}`, { ...options, headers, signal: controller.signal });
+    clearTimeout(timeout);
+  } catch (err) {
+    // Tarmoq xatosi - sayt qulamaydi, chiroyli xabar
+    const isAbort = err instanceof DOMException && err.name === "AbortError";
+    throw new ApiRequestError(0, isAbort ? "So'rov vaqti tugadi, internetni tekshiring" : "Tarmoq xatosi, serverga ulanib bo'lmadi");
+  }
 
   if (response.status === 401 && token && retry) {
     const fresh = await refreshAccess();
@@ -80,7 +109,19 @@ async function request<T>(
   const contentType = response.headers.get("content-type") ?? "";
   let data: unknown = null;
   if (contentType.includes("application/json")) {
-    data = await response.json();
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+  } else {
+    // Ba'zan backend HTML qaytaradi (500) - uni JSON deb o'qishga urinmaymiz
+    try {
+      const text = await response.text();
+      if (text) data = { message: text.slice(0, 300) } as unknown;
+    } catch {
+      data = null;
+    }
   }
 
   if (!response.ok) {
@@ -88,7 +129,7 @@ async function request<T>(
       (data as ApiError)?.message ??
       (data as { detail?: string })?.detail ??
       `Xatolik yuz berdi (${response.status})`;
-    throw new ApiRequestError(response.status, message);
+    throw new ApiRequestError(response.status || 500, message);
   }
   return data as T;
 }

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth-context";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -59,15 +57,19 @@ export default function RootLayout({
   return (
     <html
       lang="uz"
-      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
+      className={`${inter.variable} ${playfair.variable} h-full antialiased dark`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('ijara_theme');if(t==='light'){document.documentElement.classList.add('light');document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark');document.documentElement.classList.remove('light')}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <BackgroundDecor />
-        <AuthProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </AuthProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

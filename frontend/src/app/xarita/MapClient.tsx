@@ -12,7 +12,7 @@ import {
   type Marker as MapLibreMarkerType,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { MapPin } from "lucide-react";
+import { MapPin, LocateFixed } from "lucide-react";
 
 import { api } from "@/lib/api";
 import { formatCompactPrice, formatPrice } from "@/lib/format";
@@ -72,10 +72,61 @@ export default function MapClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMapType | null>(null);
   const markersRef = useRef<MapLibreMarkerType[]>([]);
+  const userMarkerRef = useRef<MapLibreMarkerType | null>(null);
   const [markers, setMarkers] = useState<MapMarker[]>([]);
   const [loading, setLoading] = useState(true);
   const [mapReady, setMapReady] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+
+  const locateMe = () => {
+    const map = mapRef.current;
+    if (!map || locating) return;
+
+    if (!("geolocation" in navigator)) {
+      setGeoError("Brauzeringiz joylashuvni qo'llab-quvvatlamaydi");
+      setTimeout(() => setGeoError(null), 5000);
+      return;
+    }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        const m = mapRef.current;
+        if (!m) return;
+        const coords: [number, number] = [
+          pos.coords.longitude,
+          pos.coords.latitude,
+        ];
+        if (!userMarkerRef.current) {
+          const el = document.createElement("div");
+          el.className = "user-location-dot";
+          el.innerHTML = '<span class="user-location-pulse"></span>';
+          userMarkerRef.current = new MapLibreMarker({ element: el })
+            .setLngLat(coords)
+            .addTo(m);
+        } else {
+          userMarkerRef.current.setLngLat(coords);
+        }
+        m.flyTo({ center: coords, zoom: 15, duration: 1200 });
+        setGeoError(null);
+      },
+      (err) => {
+        setLocating(false);
+        const text =
+          err.code === err.PERMISSION_DENIED
+            ? "Joylashuv uchun ruxsat berilmadi — brauzer sozlamasidan ruxsat bering"
+            : err.code === err.POSITION_UNAVAILABLE
+              ? "Joylashuv hozir aniqlanmadi — internet/GPS ni tekshiring"
+              : "Joylashuvni kutish vaqti tugadi — yana bosing";
+        setGeoError(text);
+        setTimeout(() => setGeoError(null), 6000);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -106,10 +157,16 @@ export default function MapClient() {
       zoom: 12,
       minZoom: 3,
       attributionControl: false,
+      dragRotate: false,
+      touchPitch: false,
     });
+    map.touchZoomRotate.disableRotation();
     mapRef.current = map;
 
-    map.addControl(new NavigationControl(), "bottom-right");
+    map.addControl(
+      new NavigationControl({ showCompass: false }),
+      "bottom-right"
+    );
 
     map.on("load", () => {
       setMapReady(true);
@@ -191,6 +248,23 @@ export default function MapClient() {
             {apiError}
           </div>
         )}
+
+        {geoError && (
+          <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-[#12162a]/95 backdrop-blur-xl rounded-xl px-4 py-2 text-xs text-[#ff6b5e] shadow-md border border-[rgba(255,107,94,0.3)] z-[1001] max-w-[90%] text-center">
+            {geoError}
+          </div>
+        )}
+
+        <button
+          onClick={locateMe}
+          title="Men turgan joyni ko'rsat"
+          className="absolute right-3 bottom-[84px] z-[1001] w-9 h-9 rounded-xl bg-[#12162a] border border-[rgba(212,175,55,0.35)] shadow-md flex items-center justify-center hover:bg-[rgba(212,175,55,0.12)] active:scale-95 transition-all cursor-pointer"
+        >
+          <LocateFixed
+            size={16}
+            className={`text-[#d4af37] ${locating ? "animate-pulse" : ""}`}
+          />
+        </button>
 
         {!loading && markers.length > 0 && (
           <div className="absolute top-3 left-3 bg-[#12162a]/90 backdrop-blur-xl rounded-xl px-3 py-1.5 text-xs text-muted border border-[rgba(212,175,55,0.2)] z-[1000]">

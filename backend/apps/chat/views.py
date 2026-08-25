@@ -88,6 +88,25 @@ class MessageCreateView(APIView):
         return Response(MessageSerializer(message).data, status=status.HTTP_201_CREATED)
 
 
+class UnreadCountView(APIView):
+    """Total unread messages across all conversations of the current user."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        from django.db.models import Sum, Value, IntegerField
+        from django.db.models.functions import Coalesce
+
+        tenant_agg = Conversation.objects.filter(tenant=user).aggregate(
+            total=Coalesce(Sum("tenant_unread"), Value(0), output_field=IntegerField())
+        )
+        owner_agg = Conversation.objects.filter(owner=user).aggregate(
+            total=Coalesce(Sum("owner_unread"), Value(0), output_field=IntegerField())
+        )
+        return Response({"count": (tenant_agg["total"] or 0) + (owner_agg["total"] or 0)})
+
+
 class ConversationActionView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsConversationParticipant]
 
