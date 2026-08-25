@@ -80,11 +80,7 @@ export default function TelegramLoginButton() {
   }, [handleAuth]);
 
   if (!BOT_USERNAME) {
-    return (
-      <div className="text-xs text-muted text-center py-3">
-        {t("login.phoneLoginNotAvailable")}
-      </div>
-    );
+    return null;
   }
 
   return (

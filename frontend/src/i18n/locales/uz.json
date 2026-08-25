@@ -173,7 +173,8 @@
     "hasAccount": "Hisobingiz bormi?",
     "loginLink": "Kiring",
     "phoneError": "Telefon raqam +998XXXXXXXXX formatida bo'lishi kerak. Masalan: +998901234567",
-    "nameError": "Ism familiya kiriting"
+    "nameError": "Ism familiya kiriting",
+    "accountAlreadyExists": "Bu telefon raqam allaqachon ro'yxatdan o'tgan. Tizimga kiring"
   },
   "profile": {
     "title": "Profil",

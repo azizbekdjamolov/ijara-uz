@@ -173,7 +173,8 @@
     "hasAccount": "Already have an account?",
     "loginLink": "Sign in",
     "phoneError": "Phone must be in +998XXXXXXXXX format. Example: +998901234567",
-    "nameError": "Enter your full name"
+    "nameError": "Enter your full name",
+    "accountAlreadyExists": "This phone number is already registered. Please sign in"
   },
   "profile": {
     "title": "Profile",
