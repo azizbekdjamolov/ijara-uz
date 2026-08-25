@@ -3,11 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-import { formatCompactPrice, PROPERTY_TYPE_LABELS } from "@/lib/format";
+import { formatCompactPrice, getPropertyTypeLabel } from "@/lib/format";
 import type { ListingSummary } from "@/lib/types";
 
 export default function ListingCard({ listing }: { listing: ListingSummary }) {
+  const { t } = useTranslation();
   const image = listing.primary_image?.thumb ?? listing.primary_image?.image;
   return (
     <Link
@@ -26,7 +28,7 @@ export default function ListingCard({ listing }: { listing: ListingSummary }) {
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-muted text-sm">
-            Rasm yo&apos;q
+            {t("listingCard.noImage")}
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#07090f]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -37,7 +39,7 @@ export default function ListingCard({ listing }: { listing: ListingSummary }) {
         )}
         {listing.risk_level === "low" && (
           <span className="absolute top-2.5 left-2.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-full backdrop-blur bg-[rgba(212,175,55,0.15)] border border-[rgba(212,175,55,0.4)] text-gold">
-            Tekshirilgan
+            {t("listingCard.verified")}
           </span>
         )}
       </div>
@@ -54,9 +56,9 @@ export default function ListingCard({ listing }: { listing: ListingSummary }) {
             {listing.property.district}
           </span>
           <span>
-            {PROPERTY_TYPE_LABELS[listing.property.property_type] ?? ""}
+            {getPropertyTypeLabel(listing.property.property_type)}
             {listing.property.rooms
-              ? ` · ${listing.property.rooms} xona`
+              ? ` · ${t("listingCard.rooms", { count: listing.property.rooms })}`
               : ""}
           </span>
         </div>

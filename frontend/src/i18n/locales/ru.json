@@ -77,7 +77,23 @@
     "sortCheapest": "Сначала дешёвые",
     "sortExpensive": "Сначала дорогие",
     "results": "{{count}} результатов",
-    "empty": "Объявления не найдены"
+    "empty": "Объявления не найдены",
+    "found": "Найдено {{count}} объявлений",
+    "filtering": "Фильтрация",
+    "clearFilters": "Очистить",
+    "propertyTypeFilter": "Тип недвижимости",
+    "districtFilter": "Район",
+    "roomsFilter": "Комнаты",
+    "priceMaxFilter": "Цена, до сом",
+    "sortFilter": "Сортировка",
+    "furnishedFilter": "Мебель",
+    "loading": "Загрузка...",
+    "searchPlaceholder": "Поиск...",
+    "noResults": "Ничего не найдено.",
+    "tryFilters": "Попробуйте изменить фильтры",
+    "clearAllFilters": "Очистить фильтры",
+    "roomOption": "{{count}} комн.",
+    "allOptions": "Любые"
   },
   "listingDetail": {
     "backToListings": "Вернуться к объявлениям",
@@ -100,7 +116,17 @@
     "minRentLabel": "Минимальная аренда",
     "yes": "Да",
     "no": "Нет",
-    "months": "мес."
+    "months": "мес.",
+    "approximate": "приблизительно",
+    "perMonth": "в месяц"
+  },
+  "amenity": {
+    "ac": "Кондиционер",
+    "elevator": "Лифт",
+    "internet": "Интернет",
+    "parking": "Парковка",
+    "familyOk": "Семьям",
+    "studentsOk": "Студентам"
   },
   "login": {
     "title": "Добро пожаловать",
@@ -117,7 +143,9 @@
     "phoneLoginNotAvailable": "Вход через Telegram недоступен",
     "telegramFallback": "Если бот не открывается, перейдите в Telegram к @{{username}}",
     "telegramLoading": "Вход через Telegram...",
-    "telegramError": "Ошибка входа через Telegram"
+    "telegramError": "Ошибка входа через Telegram",
+    "invalidCredentials": "Неверный телефон или пароль. Попробуйте снова",
+    "accountExists": "Этот аккаунт уже существует. Войдите в систему"
   },
   "register": {
     "title": "Регистрация",
@@ -263,5 +291,49 @@
     "uz": "O'zbek",
     "ru": "Русский",
     "en": "English"
+  },
+  "format": {
+    "som": "сўм",
+    "mln": "млн",
+    "thousand": "минг",
+    "justNow": "только что",
+    "minutesAgo": "{{count}} мин. назад",
+    "hoursAgo": "{{count}} ч. назад",
+    "daysAgo": "{{count}} дн. назад",
+    "propertyType": {
+      "apartment": "Квартира",
+      "house": "Дом",
+      "room": "Комната",
+      "office": "Офис",
+      "commercial": "Торговое"
+    },
+    "status": {
+      "draft": "Черновик",
+      "pendingReview": "На проверке",
+      "aiChecking": "На проверке",
+      "needsReview": "На модерации",
+      "approved": "Одобрено",
+      "published": "Активно",
+      "paused": "Приостановлено",
+      "rejected": "Отклонено",
+      "expired": "Срок истёк",
+      "deleted": "Удалено"
+    }
+  },
+  "sort": {
+    "newest": "Сначала новые",
+    "cheapest": "Сначала дешёвые",
+    "expensive": "Сначала дорогие"
+  },
+  "setPassword": {
+    "title": "Установите пароль",
+    "subtitle": "Вы успешно зарегистрировались через Telegram. Теперь установите свой пароль",
+    "confirmPlaceholder": "Повторите пароль",
+    "toggle": "Показать пароль",
+    "submit": "Сохранить",
+    "done": "Пароль сохранён!",
+    "redirecting": "Перенаправление в профиль...",
+    "mismatch": "Пароли не совпадают",
+    "skip": "Пропустить пока"
   }
 }

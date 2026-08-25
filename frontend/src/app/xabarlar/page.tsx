@@ -126,7 +126,7 @@ export default function MessagesPage() {
             </div>
           ) : (
             conversations.map((c) => {
-              const name = c.other_user.full_name || "Foydalanuvchi";
+              const name = c.other_user.full_name || t("nav.profile");
               return (
                 <button
                   key={c.id}
@@ -202,7 +202,7 @@ export default function MessagesPage() {
                   placeholder={t("messages.typeMessage")}
                   className="input flex-1"
                 />
-                <button onClick={send} className="btn btn-primary px-3.5" aria-label="Yuborish">
+                <button onClick={send} className="btn btn-primary px-3.5" aria-label={t("messages.typeMessage")}>
                   <Send size={18} />
                 </button>
               </div>

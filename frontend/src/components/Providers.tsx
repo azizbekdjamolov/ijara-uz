@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { initI18n } from "@/i18n";
 import Header from "./Header";
 import Footer from "./Footer";
+import BottomBar from "./BottomBar";
 import AuthGuard from "./AuthGuard";
 
 try {

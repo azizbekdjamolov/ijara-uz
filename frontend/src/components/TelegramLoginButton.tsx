@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/lib/auth-context";
 import { ApiRequestError } from "@/lib/api";
@@ -15,29 +16,41 @@ declare global {
 }
 
 export default function TelegramLoginButton() {
-  const { telegramLogin } = useAuth();
+  const { t } = useTranslation();
+  const { telegramLogin, user } = useAuth();
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [widgetFailed, setWidgetFailed] = useState(false);
 
-  const handleAuth = async (user: Record<string, unknown>) => {
+  const handleAuth = useCallback(async (tgUser: Record<string, unknown>) => {
     setLoading(true);
     setError(null);
     try {
-      await telegramLogin(user);
-      router.push("/profil");
+      const loggedInUser = await telegramLogin(tgUser);
+      if (loggedInUser.has_password === false) {
+        router.push("/parol-ornatish");
+      } else {
+        router.push("/profil");
+      }
       router.refresh();
     } catch (e) {
-      setError(
-        e instanceof ApiRequestError
-          ? e.message
-          : "Telegram orqali kirishda xatolik"
-      );
+      const msg = e instanceof Error ? e.message : "";
+      if (
+        e instanceof ApiRequestError &&
+        (e.status === 400 || e.status === 409) &&
+        (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("allaqachon") || msg.toLowerCase().includes("mavjud"))
+      ) {
+        setError(t("login.accountExists"));
+      } else {
+        setError(
+          e instanceof ApiRequestError ? e.message : t("login.telegramError")
+        );
+      }
       setLoading(false);
     }
-  };
+  }, [telegramLogin, router, t]);
 
   useEffect(() => {
     if (!BOT_USERNAME) return;
@@ -58,22 +71,18 @@ export default function TelegramLoginButton() {
     script.setAttribute("data-onauth", "window.onTelegramAuth(user)");
     container.appendChild(script);
 
-    const failTimer = window.setTimeout(
-      () => setWidgetFailed(true),
-      8000
-    );
+    const failTimer = window.setTimeout(() => setWidgetFailed(true), 8000);
 
     return () => {
       window.clearTimeout(failTimer);
       window.onTelegramAuth = undefined;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleAuth]);
 
   if (!BOT_USERNAME) {
     return (
       <div className="text-xs text-muted text-center py-3">
-        Telegram orqali kirish mavjud emas
+        {t("login.phoneLoginNotAvailable")}
       </div>
     );
   }
@@ -82,7 +91,7 @@ export default function TelegramLoginButton() {
     <div className="flex flex-col items-center gap-2 min-h-[52px] justify-center">
       {loading && (
         <div className="text-xs text-muted animate-pulse-soft">
-          Telegram orqali kiritilmoqda...
+          {t("login.telegramLoading")}
         </div>
       )}
       {error && (
@@ -96,7 +105,7 @@ export default function TelegramLoginButton() {
           rel="noopener noreferrer"
           className="text-xs text-gold font-medium hover:text-gold-light transition-colors"
         >
-          Bot ochilmasa, Telegram&apos;da @{BOT_USERNAME} ni oching
+          {t("login.telegramFallback", { username: BOT_USERNAME })}
         </a>
       )}
     </div>

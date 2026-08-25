@@ -108,6 +108,7 @@ export interface UserProfile {
   role: "tenant" | "owner" | "moderator" | "admin";
   is_phone_verified: boolean;
   is_profile_verified: boolean;
+  has_password: boolean;
   trust_tier: string;
   city: string;
   telegram_username?: string;

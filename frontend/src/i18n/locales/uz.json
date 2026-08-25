@@ -77,7 +77,23 @@
     "sortCheapest": "Arzon birinchi",
     "sortExpensive": "Qimmat birinchi",
     "results": "{{count}} ta natija",
-    "empty": "Hech qanday e'lon topilmadi"
+    "empty": "Hech qanday e'lon topilmadi",
+    "found": "{{count}} ta e'lon topildi",
+    "filtering": "Filtrlash",
+    "clearFilters": "Tozalash",
+    "propertyTypeFilter": "Mulk turi",
+    "districtFilter": "Tuman",
+    "roomsFilter": "Xonalar",
+    "priceMaxFilter": "Narx, so'mgacha",
+    "sortFilter": "Tartiblash",
+    "furnishedFilter": "Mebelli",
+    "loading": "Yuklanmoqda...",
+    "searchPlaceholder": "Qidirish...",
+    "noResults": "Hech narsa topilmadi.",
+    "tryFilters": "Filtrlarni o'zgartirib ko'ring",
+    "clearAllFilters": "Filtrlarni tozalash",
+    "roomOption": "{{count}} xona",
+    "allOptions": "Istamas"
   },
   "listingDetail": {
     "backToListings": "E'lonlarga qaytish",
@@ -100,7 +116,17 @@
     "minRentLabel": "Minimal ijarа",
     "yes": "Ha",
     "no": "Yo'q",
-    "months": "oy"
+    "months": "oy",
+    "approximate": "taxminiy",
+    "perMonth": "oyiga"
+  },
+  "amenity": {
+    "ac": "Konditsioner",
+    "elevator": "Lift",
+    "internet": "Internet",
+    "parking": "Avtoturargoh",
+    "familyOk": "Oilali",
+    "studentsOk": "Talabalar"
   },
   "login": {
     "title": "Xush kelibsiz",
@@ -117,7 +143,9 @@
     "phoneLoginNotAvailable": "Telegram orqali kirish mavjud emas",
     "telegramFallback": "Bot ochilmasa, Telegram'da @{{username}} ni oching",
     "telegramLoading": "Telegram orqali kiritilmoqda...",
-    "telegramError": "Telegram orqali kirishda xatolik"
+    "telegramError": "Telegram orqali kirishda xatolik",
+    "invalidCredentials": "Telefon yoki parol noto'g'ri. Qaytadan urinib ko'ring",
+    "accountExists": "Bu akkaunt allaqachon mavjud. Tizimga kiring"
   },
   "register": {
     "title": "Ro'yxatdan o'tish",
@@ -263,5 +291,49 @@
     "uz": "O'zbek",
     "ru": "Русский",
     "en": "English"
+  },
+  "format": {
+    "som": "so'm",
+    "mln": "mln",
+    "thousand": "ming",
+    "justNow": "hozir",
+    "minutesAgo": "{{count}} daqiqa oldin",
+    "hoursAgo": "{{count}} soat oldin",
+    "daysAgo": "{{count}} kun oldin",
+    "propertyType": {
+      "apartment": "Kvartira",
+      "house": "Uy",
+      "room": "Xona",
+      "office": "Ofis",
+      "commercial": "Tijorat"
+    },
+    "status": {
+      "draft": "Qoralama",
+      "pendingReview": "Tekshirilmoqda",
+      "aiChecking": "Tekshirilmoqda",
+      "needsReview": "Moderatsiyada",
+      "approved": "Tasdiqlangan",
+      "published": "Faol",
+      "paused": "To'xtatilgan",
+      "rejected": "Rad etilgan",
+      "expired": "Muddati tugagan",
+      "deleted": "O'chirilgan"
+    }
+  },
+  "sort": {
+    "newest": "Eng yangi",
+    "cheapest": "Arzonlari",
+    "expensive": "Qimmatlari"
+  },
+  "setPassword": {
+    "title": "Parol o'rnating",
+    "subtitle": "Telegram orqali muvaffaqiyatli ro'yxatdan o'tdingiz. Endi o'zingizga parol o'rnating",
+    "confirmPlaceholder": "Parolni qaytadan kiriting",
+    "toggle": "Parolni ko'rsatish",
+    "submit": "Saqlash",
+    "done": "Parol saqlandi!",
+    "redirecting": "Profilga yo'naltirilmoqda...",
+    "mismatch": "Parollar mos kelmaydi",
+    "skip": "Hozircha o'tkazib yuborish"
   }
 }

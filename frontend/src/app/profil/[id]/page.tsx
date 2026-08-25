@@ -90,7 +90,7 @@ export default function PublicProfilePage() {
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              {profile.full_name || "Foydalanuvchi"}
+              {profile.full_name || t("nav.profile")}
               {profile.is_profile_verified && (
                 <BadgeCheck size={22} className="text-gold shrink-0" />
               )}

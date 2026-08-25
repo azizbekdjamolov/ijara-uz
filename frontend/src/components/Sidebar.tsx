@@ -134,7 +134,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 {(user.full_name || "F").charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="font-semibold text-sm truncate">{user.full_name || "Foydalanuvchi"}</div>
+                <div className="font-semibold text-sm truncate">{user.full_name || t("nav.profile")}</div>
                 <div className="text-xs text-muted truncate">
                   {user.telegram_username ? `@${user.telegram_username}` : user.phone ?? ""}
                 </div>

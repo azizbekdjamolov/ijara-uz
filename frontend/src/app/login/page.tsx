@@ -50,8 +50,8 @@ function LoginForm() {
     try {
       await login(identifier.trim(), password);
       router.push(searchParams.get("next") ?? "/profil");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+    } catch {
+      setError(t("login.invalidCredentials"));
       setSubmitting(false);
     }
   };

@@ -5,11 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { Check, LogOut, Pencil, Plus, Save, User as UserIcon, X } from "lucide-react";
 
 import { api, ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import { STATUS_LABELS } from "@/lib/format";
+import { getStatusLabel } from "@/lib/format";
 import type { ListingSummary } from "@/lib/types";
 
 export default function ProfilePage() {
@@ -170,7 +171,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 <h1 className="text-xl font-bold truncate">
-                  {user.full_name || "Foydalanuvchi"}
+                  {user.full_name || t("nav.profile")}
                 </h1>
                 <div className="text-sm text-muted">
                   {user.phone ?? (user.telegram_username ? `@${user.telegram_username}` : "")}
@@ -303,14 +304,14 @@ export default function ProfilePage() {
             <div className="flex-1 min-w-0">
               <div className="font-semibold truncate text-sm">{listing.title}</div>
               <div className="text-sm text-muted">
-                {Number(listing.price).toLocaleString("ru-RU")} so&apos;m/oy
+                {Number(listing.price).toLocaleString(i18n.language === "ru" ? "ru-RU" : i18n.language === "en" ? "en-US" : "uz-UZ")} {t("format.som")}/{t("listingDetail.months")}
               </div>
               <span
                 className={`inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full ${
                   statusColor[listing.status] ?? "bg-[rgba(118,118,128,0.12)] text-muted"
                 }`}
               >
-                {STATUS_LABELS[listing.status] ?? listing.status}
+                {getStatusLabel(listing.status)}
               </span>
             </div>
             <Link

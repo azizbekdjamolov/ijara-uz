@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import {
   BadgeCheck,
   Bed,
@@ -24,7 +25,7 @@ import { api, ApiRequestError } from "@/lib/api";
 import {
   formatPrice,
   formatRelative,
-  PROPERTY_TYPE_LABELS,
+  getPropertyTypeLabel,
 } from "@/lib/format";
 import type { ListingDetail } from "@/lib/types";
 import { useAuth } from "@/lib/auth-context";
@@ -112,7 +113,7 @@ export default function ListingDetailPage() {
   const isOwner = user && user.id === listing.owner.id;
 
   const facts = [
-    { icon: Building2, label: t("listingDetail.propertyInfo"), value: PROPERTY_TYPE_LABELS[property.property_type] ?? "—" },
+    { icon: Building2, label: t("listingDetail.propertyInfo"), value: getPropertyTypeLabel(property.property_type) },
     { icon: Bed, label: t("listingsPage.rooms"), value: property.rooms ? `${property.rooms} ${t("listingsPage.rooms").toLowerCase()}` : "—" },
     { icon: Ruler, label: t("listingDetail.propertyInfo"), value: property.area ? `${property.area} m²` : "—" },
     { icon: MapPin, label: t("listingDetail.location"), value: property.floor ? `${property.floor}/${property.total_floors ?? "?"}` : "—" },
@@ -120,12 +121,12 @@ export default function ListingDetailPage() {
 
   const amenityItems = [
     { label: t("listingDetail.furnishedLabel"), on: property.furnished },
-    { label: "Konditsioner", on: property.has_ac },
-    { label: "Lift", on: property.has_elevator },
-    { label: "Internet", on: property.has_internet },
-    { label: "Avtoturargoh", on: property.has_parking },
-    { label: "Oilali", on: property.family_ok },
-    { label: "Talabalar", on: property.students_ok },
+    { label: t("amenity.ac"), on: property.has_ac },
+    { label: t("amenity.elevator"), on: property.has_elevator },
+    { label: t("amenity.internet"), on: property.has_internet },
+    { label: t("amenity.parking"), on: property.has_parking },
+    { label: t("amenity.familyOk"), on: property.family_ok },
+    { label: t("amenity.studentsOk"), on: property.students_ok },
   ];
 
   return (
@@ -258,7 +259,7 @@ export default function ListingDetailPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-foreground truncate">
-                    {listing.owner.full_name || "Foydalanuvchi"}
+                    {listing.owner.full_name || t("nav.profile")}
                   </span>
                   {listing.verification.owner_profile_verified && (
                     <BadgeCheck size={18} className="text-gold shrink-0" />
@@ -269,7 +270,7 @@ export default function ListingDetailPage() {
                     <div className="flex items-center gap-1">
                       <Calendar size={12} />
                       {t("listingDetail.memberSince")}{" "}
-                      {new Intl.DateTimeFormat("uz-UZ", { day: "numeric", month: "short", year: "numeric" }).format(
+                      {new Intl.DateTimeFormat(i18n.language === "ru" ? "ru-RU" : i18n.language === "en" ? "en-US" : "uz-UZ", { day: "numeric", month: "short", year: "numeric" }).format(
                         new Date(listing.owner.member_since)
                       )}
                     </div>
@@ -291,7 +292,7 @@ export default function ListingDetailPage() {
           <div className="card p-5 sticky top-20 animate-fade-in-up" style={{ animationDelay: "0.08s" }}>
             <div className="text-2xl font-bold text-foreground">{formatPrice(listing.price)}</div>
             <div className="text-xs text-muted mt-0.5">
-              {t("listingsPage.priceFrom").replace("Narx ", "").replace("Цена ", "").replace("Price ", "") || "oyiga"}
+              {t("listingsPage.priceFrom").replace("Narx ", "").replace("Цена ", "").replace("Price ", "") || t("listingDetail.perMonth")}
               {property.min_rental_months ? ` · ${t("listingDetail.minRentLabel")}: ${property.min_rental_months} ${t("listingDetail.months")}` : ""}
             </div>
 
@@ -299,7 +300,7 @@ export default function ListingDetailPage() {
               <MapPin size={15} />
               {property.district}, {property.city}
               {property.location_accuracy === "approximate" && (
-                <span className="text-xs text-muted">(taxminiy)</span>
+                <span className="text-xs text-muted">({t("listingDetail.approximate")})</span>
               )}
             </div>
 

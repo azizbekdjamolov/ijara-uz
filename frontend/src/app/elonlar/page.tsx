@@ -2,10 +2,11 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { MapPin, Search, SlidersHorizontal, X } from "lucide-react";
 
 import { api, ApiRequestError } from "@/lib/api";
-import { PROPERTY_TYPE_LABELS } from "@/lib/format";
+import { getPropertyTypeLabel } from "@/lib/format";
 import type { ListingSummary } from "@/lib/types";
 import ListingCard from "@/components/ListingCard";
 
@@ -17,18 +18,14 @@ const DISTRICTS = [
 
 const PROPERTY_TYPES = ["apartment", "house", "room", "office", "commercial"];
 
-const SORTS = [
-  { value: "newest", label: "Eng yangi" },
-  { value: "price_asc", label: "Arzonlari" },
-  { value: "price_desc", label: "Qimmatlari" },
-];
+const SORT_KEYS = ["newest", "price_asc", "price_desc"] as const;
 
 export default function ListingsPageWrapper() {
   return (
     <Suspense
       fallback={
         <div className="max-w-7xl mx-auto px-4 py-12 text-center text-muted">
-          Yuklanmoqda...
+          Loading...
         </div>
       }
     >
@@ -38,6 +35,7 @@ export default function ListingsPageWrapper() {
 }
 
 function ListingsPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -57,6 +55,12 @@ function ListingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+
+  const SORTS = [
+    { value: "newest", label: t("sort.newest") },
+    { value: "price_asc", label: t("sort.cheapest") },
+    { value: "price_desc", label: t("sort.expensive") },
+  ];
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -78,12 +82,12 @@ function ListingsPage() {
       setTotal(data.count);
     } catch (e) {
       setError(
-        e instanceof ApiRequestError ? e.message : "Xatolik yuz berdi"
+        e instanceof ApiRequestError ? e.message : t("common.error")
       );
     } finally {
       setLoading(false);
     }
-  }, [query, district, propertyType, rooms, priceMax, furnished, sort]);
+  }, [query, district, propertyType, rooms, priceMax, furnished, sort, t]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -124,17 +128,17 @@ function ListingsPage() {
 
   const typeChips = (
     <div className="flex flex-wrap gap-2">
-      {PROPERTY_TYPES.map((t) => (
+      {PROPERTY_TYPES.map((tp) => (
         <button
-          key={t}
-          onClick={() => setPropertyType(propertyType === t ? "" : t)}
+          key={tp}
+          onClick={() => setPropertyType(propertyType === tp ? "" : tp)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-            propertyType === t
+            propertyType === tp
               ? "bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] shadow-[0_4px_12px_rgba(212,175,55,0.3)]"
               : "bg-[rgba(255,255,255,0.06)] text-foreground hover:bg-[rgba(255,255,255,0.12)] border border-[rgba(212,175,55,0.18)]"
           }`}
         >
-          {PROPERTY_TYPE_LABELS[t]}
+          {getPropertyTypeLabel(tp)}
         </button>
       ))}
     </div>
@@ -143,13 +147,13 @@ function ListingsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 pb-24 md:pb-6">
       <div className="flex items-center justify-between mb-4 animate-fade-in-up">
-        <h1 className="text-2xl font-bold">E&apos;lonlar</h1>
+        <h1 className="text-2xl font-bold">{t("listingsPage.title")}</h1>
         <button
           onClick={() => setShowFilters((v) => !v)}
           className={`lg:hidden btn ${showFilters ? "btn-primary" : "btn-secondary"} px-3.5 py-2 text-sm`}
         >
           <SlidersHorizontal size={16} />
-          Filtrlar
+          {t("listingsPage.filters")}
           {activeFilterCount > 0 && (
             <span className="bg-[#1a1405] text-gold w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold">
               {activeFilterCount}
@@ -166,12 +170,12 @@ function ListingsPage() {
         >
           <div className="card p-4 space-y-4 sticky top-20">
             <div className="flex items-center justify-between">
-              <span className="font-semibold">Filtrlash</span>
+              <span className="font-semibold">{t("listingsPage.filtering")}</span>
               <button
                 onClick={clearFilters}
                 className="text-xs text-gold font-medium hover:underline flex items-center gap-1"
               >
-                <X size={13} /> Tozalash
+                <X size={13} /> {t("listingsPage.clearFilters")}
               </button>
             </div>
 
@@ -180,28 +184,28 @@ function ListingsPage() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Qidirish..."
+                placeholder={t("listingsPage.searchPlaceholder")}
                 className="input pl-10"
               />
             </div>
 
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1.5">
-                Mulk turi
+                {t("listingsPage.propertyTypeFilter")}
               </div>
               {typeChips}
             </div>
 
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1.5">
-                Tuman
+                {t("listingsPage.districtFilter")}
               </div>
               <select
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 className={`input ${district ? "text-foreground" : "text-muted"}`}
               >
-                <option value="">Barchasi</option>
+                <option value="">{t("listingsPage.allDistricts")}</option>
                 {DISTRICTS.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}
@@ -210,37 +214,37 @@ function ListingsPage() {
 
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1.5">
-                Xonalar
+                {t("listingsPage.roomsFilter")}
               </div>
               <select
                 value={rooms}
                 onChange={(e) => setRooms(e.target.value)}
                 className={`input ${rooms ? "text-foreground" : "text-muted"}`}
               >
-                <option value="">Istamas</option>
+                <option value="">{t("listingsPage.allOptions")}</option>
                 {[1, 2, 3, 4, 5].map((r) => (
-                  <option key={r} value={r}>{r} xona</option>
+                  <option key={r} value={r}>{t("listingsPage.roomOption", { count: r })}</option>
                 ))}
               </select>
             </div>
 
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1.5">
-                Narx, so&apos;mgacha
+                {t("listingsPage.priceMaxFilter")}
               </div>
               <input
                 type="number"
                 min={0}
                 value={priceMax}
                 onChange={(e) => setPriceMax(e.target.value)}
-                placeholder="Masalan: 5000000"
+                placeholder="5000000"
                 className="input"
               />
             </div>
 
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1.5">
-                Tartiblash
+                {t("listingsPage.sortFilter")}
               </div>
               <select
                 value={sort}
@@ -263,7 +267,7 @@ function ListingsPage() {
                 />
                 <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-[#12162a] rounded-full shadow transition-transform ${furnished ? "translate-x-4" : ""}`} />
               </span>
-              Mebelli
+              {t("listingsPage.furnishedFilter")}
             </label>
           </div>
         </aside>
@@ -272,9 +276,9 @@ function ListingsPage() {
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm text-muted">
               {loading ? (
-                <span className="animate-pulse-soft">Yuklanmoqda...</span>
+                <span className="animate-pulse-soft">{t("listingsPage.loading")}</span>
               ) : (
-                `${total} ta e'lon topildi`
+                t("listingsPage.found", { count: total })
               )}
             </div>
           </div>
@@ -297,15 +301,15 @@ function ListingsPage() {
           ) : results.length === 0 ? (
             <div className="text-center py-16 animate-scale-in">
               <MapPin size={40} className="mx-auto text-muted mb-3" />
-              <div className="text-muted">Hech narsa topilmadi.</div>
+              <div className="text-muted">{t("listingsPage.noResults")}</div>
               <div className="text-sm text-muted mt-1">
-                Filtrlarni o&apos;zgartirib ko&apos;ring
+                {t("listingsPage.tryFilters")}
               </div>
               <button
                 onClick={clearFilters}
                 className="btn btn-secondary px-4 py-2 text-sm mt-4"
               >
-                Filtrlarni tozalash
+                {t("listingsPage.clearAllFilters")}
               </button>
             </div>
           ) : (

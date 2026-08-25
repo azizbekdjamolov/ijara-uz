@@ -77,7 +77,23 @@
     "sortCheapest": "Cheapest first",
     "sortExpensive": "Most expensive",
     "results": "{{count}} results",
-    "empty": "No listings found"
+    "empty": "No listings found",
+    "found": "{{count}} listings found",
+    "filtering": "Filter",
+    "clearFilters": "Clear",
+    "propertyTypeFilter": "Property type",
+    "districtFilter": "District",
+    "roomsFilter": "Rooms",
+    "priceMaxFilter": "Price, max som",
+    "sortFilter": "Sort",
+    "furnishedFilter": "Furnished",
+    "loading": "Loading...",
+    "searchPlaceholder": "Search...",
+    "noResults": "Nothing found.",
+    "tryFilters": "Try changing the filters",
+    "clearAllFilters": "Clear filters",
+    "roomOption": "{{count}} room",
+    "allOptions": "Any"
   },
   "listingDetail": {
     "backToListings": "Back to listings",
@@ -100,7 +116,17 @@
     "minRentLabel": "Minimum rental",
     "yes": "Yes",
     "no": "No",
-    "months": "mo"
+    "months": "mo",
+    "approximate": "approximate",
+    "perMonth": "per month"
+  },
+  "amenity": {
+    "ac": "Air conditioning",
+    "elevator": "Elevator",
+    "internet": "Internet",
+    "parking": "Parking",
+    "familyOk": "Family-friendly",
+    "studentsOk": "Students OK"
   },
   "login": {
     "title": "Welcome",
@@ -117,7 +143,9 @@
     "phoneLoginNotAvailable": "Telegram login is not available",
     "telegramFallback": "If bot doesn't open, go to Telegram @{{username}}",
     "telegramLoading": "Signing in via Telegram...",
-    "telegramError": "Error signing in via Telegram"
+    "telegramError": "Error signing in via Telegram",
+    "invalidCredentials": "Invalid phone or password. Please try again",
+    "accountExists": "This account already exists. Please sign in"
   },
   "register": {
     "title": "Register",
@@ -263,5 +291,49 @@
     "uz": "O'zbek",
     "ru": "Русский",
     "en": "English"
+  },
+  "format": {
+    "som": "som",
+    "mln": "mln",
+    "thousand": "k",
+    "justNow": "just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "propertyType": {
+      "apartment": "Apartment",
+      "house": "House",
+      "room": "Room",
+      "office": "Office",
+      "commercial": "Commercial"
+    },
+    "status": {
+      "draft": "Draft",
+      "pendingReview": "Pending review",
+      "aiChecking": "AI checking",
+      "needsReview": "Needs review",
+      "approved": "Approved",
+      "published": "Active",
+      "paused": "Paused",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "deleted": "Deleted"
+    }
+  },
+  "sort": {
+    "newest": "Newest first",
+    "cheapest": "Cheapest first",
+    "expensive": "Most expensive"
+  },
+  "setPassword": {
+    "title": "Set your password",
+    "subtitle": "You registered via Telegram successfully. Now set your own password",
+    "confirmPlaceholder": "Confirm password",
+    "toggle": "Show password",
+    "submit": "Save",
+    "done": "Password saved!",
+    "redirecting": "Redirecting to profile...",
+    "mismatch": "Passwords do not match",
+    "skip": "Skip for now"
   }
 }

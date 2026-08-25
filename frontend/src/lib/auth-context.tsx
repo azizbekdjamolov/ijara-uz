@@ -19,7 +19,7 @@ interface AuthState {
   login: (identifier: string, password: string) => Promise<void>;
   register: (phone: string, password: string, fullName: string) => Promise<void>;
   registerComplete: (phone: string, password: string) => Promise<void>;
-  telegramLogin: (data: Record<string, unknown>) => Promise<void>;
+  telegramLogin: (data: Record<string, unknown>) => Promise<UserProfile>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -94,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
       setTokens(payload.access, payload.refresh);
       setUser(payload.user);
+      return payload.user;
     },
     []
   );
