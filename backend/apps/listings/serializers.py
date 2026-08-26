@@ -82,9 +82,23 @@ class PropertyWriteSerializer(serializers.ModelSerializer):
 
 
 class ListingImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    thumb = serializers.SerializerMethodField()
+
     class Meta:
         model = ListingImage
         fields = ("id", "image", "thumb", "order", "is_primary")
+
+    def _abs(self, file_field) -> str:
+        request = self.context.get("request")
+        url = file_field.url if file_field else ""
+        return request.build_absolute_uri(url) if request else url
+
+    def get_image(self, obj) -> str:
+        return self._abs(obj.image)
+
+    def get_thumb(self, obj) -> str | None:
+        return self._abs(obj.thumb) if obj.thumb else None
 
 
 class OwnerSummarySerializer(serializers.ModelSerializer):
