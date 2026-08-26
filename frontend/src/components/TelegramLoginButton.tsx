@@ -78,7 +78,7 @@ export default function TelegramLoginButton() {
     script.async = true;
     script.src = "https://telegram.org/js/telegram-widget.js?22";
     script.setAttribute("data-telegram-login", BOT_USERNAME);
-    script.setAttribute("data-size", "large");
+    script.setAttribute("data-size", "medium");
     script.setAttribute("data-radius", "10");
     script.setAttribute("data-userpic", "true");
     script.setAttribute("data-lang", lang);
@@ -99,7 +99,7 @@ export default function TelegramLoginButton() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 min-h-[52px] justify-center">
+    <div className="flex flex-col items-center gap-2 min-h-[52px] justify-center w-full max-w-[280px] mx-auto">
       {loading && (
         <div className="text-xs text-muted animate-pulse-soft">
           {t("login.telegramLoading")}
@@ -108,7 +108,7 @@ export default function TelegramLoginButton() {
       {error && (
         <div className="text-xs text-danger text-center">{error}</div>
       )}
-      <div ref={containerRef} />
+      <div ref={containerRef} className="w-full overflow-hidden [&_iframe]:w-full [&_iframe]:!max-w-full" />
       {widgetFailed && !loading && !error && (
         <Link
           href={`https://t.me/${BOT_USERNAME}?start=auth`}
