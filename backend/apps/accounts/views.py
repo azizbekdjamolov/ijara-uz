@@ -18,6 +18,7 @@ from apps.accounts.serializers import (
     RegisterCompleteSerializer,
     RegisterSerializer,
     ResendVerificationSerializer,
+    SetPasswordSerializer,
     UserSerializer,
     UserUpdateSerializer,
     VerificationCodeSerializer,
@@ -438,6 +439,32 @@ class PublicProfileView(generics.RetrieveAPIView):
     def get_object(self):
         user_id = self.kwargs["user_id"]
         return User.objects.select_related("profile").get(pk=user_id)
+
+
+class SetPasswordView(APIView):
+    """Set password for authenticated users (e.g. after Telegram registration)."""
+
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [AuthAnonRateThrottle]
+
+    def post(self, request):
+        serializer = SetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        password = serializer.validated_data["password"]
+
+        user.set_password(password)
+        user.save(update_fields=["password"])
+
+        from apps.accounts.services.user_service import UserService
+        with contextlib.suppress(Exception):
+            UserService.recompute_trust_tier(user)
+
+        logger.info("[set-password] parol o'rnatildi: user=%s", user.id)
+        return Response(
+            {"message": "Parol muvaffaqiyatli o'rnatildi.", "has_password": True}
+        )
 
 
 class ChangeRoleView(APIView):

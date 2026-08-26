@@ -109,6 +109,7 @@ class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="profile.full_name", read_only=True, default="")
     city = serializers.CharField(source="profile.city", read_only=True, default="")
     trust_tier = serializers.CharField(source="profile.trust_tier", read_only=True)
+    has_password = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -126,9 +127,13 @@ class UserSerializer(serializers.ModelSerializer):
             "full_name",
             "city",
             "trust_tier",
+            "has_password",
             "profile",
         )
         read_only_fields = fields
+
+    def get_has_password(self, obj) -> bool:
+        return obj.has_usable_password()
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop("profile", {})
@@ -199,3 +204,11 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     def get_active_listings_count(self, obj) -> int:
         return obj.listings.filter(status="published").count()
+
+
+class SetPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    def validate_password(self, value: str) -> str:
+        validate_password(value)
+        return value

@@ -8,6 +8,7 @@ urlpatterns = [
     path("register/complete/", views.RegisterCompleteView.as_view(), name="auth-register-complete"),
     path("login/", views.LoginView.as_view(), name="auth-login"),
     path("telegram/", views.TelegramLoginView.as_view(), name="auth-telegram"),
+    path("set-password/", views.SetPasswordView.as_view(), name="auth-set-password"),
     path("refresh/", TokenRefreshView.as_view(), name="auth-refresh"),
     path("verify/phone/", views.VerifyPhoneView.as_view(), name="auth-verify-phone"),
     path("verify/email/", views.VerifyEmailView.as_view(), name="auth-verify-email"),
