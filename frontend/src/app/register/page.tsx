@@ -9,6 +9,7 @@ import { Eye, EyeOff, KeyRound, Lock, Phone, ShieldCheck, User } from "lucide-re
 import { api, ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import TelegramLoginButton from "@/components/TelegramLoginButton";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "";
 
@@ -126,6 +127,9 @@ export default function RegisterPage() {
                 : t("register.step1Desc")}
           </p>
           <div className="gold-line w-24 mx-auto mt-5" />
+          <div className="mt-4 flex justify-center">
+            <LanguageSwitcher compact />
+          </div>
         </div>
 
         <div className="card p-6 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
