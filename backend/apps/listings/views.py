@@ -170,7 +170,11 @@ class PublishListingView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrModerator]
 
     def post(self, request, pk):
-        listing = get_object_or_404(Listing.objects.select_related("prop"), pk=pk)
+        listing = get_object_or_404(
+            Listing.objects.select_related("prop", "owner", "owner__profile")
+            .prefetch_related("images", "ai_analyses", "reports", "verification_documents"),
+            pk=pk,
+        )
         if listing.owner_id != request.user.id and not request.user.is_moderator():
             return Response({"message": "Ruxsat yo'q."}, status=status.HTTP_403_FORBIDDEN)
         if listing.status not in (ListingStatus.DRAFT, ListingStatus.PENDING_REVIEW, ListingStatus.NEEDS_REVIEW):
@@ -182,13 +186,23 @@ class PublishListingView(APIView):
             return Response({"message": "Kamida bitta rasm yuklang."}, status=status.HTTP_400_BAD_REQUEST)
 
         ListingService.transition(listing, ListingStatus.PENDING_REVIEW, actor=request.user)
-        from apps.ai.tasks import analyze_listing_task
 
-        analyze_listing_task.delay(str(listing.id))
-        return Response(
-            {"message": "E'lon tekshirilmoqda...", "status": listing.status},
-            status=status.HTTP_202_ACCEPTED,
-        )
+        try:
+            listing = ListingService.run_ai_pipeline(listing)
+            from apps.notifications.services.notification_service import NotificationService
+            NotificationService.listing_published(listing)
+            return Response(
+                {"message": "E'lon tekshirildi.", "status": listing.status},
+                status=status.HTTP_200_OK,
+            )
+        except Exception:
+            logger.exception("AI pipeline failed synchronously, falling back to Celery")
+            from apps.ai.tasks import analyze_listing_task
+            analyze_listing_task.delay(str(listing.id))
+            return Response(
+                {"message": "E'lon tekshirilmoqda...", "status": listing.status},
+                status=status.HTTP_202_ACCEPTED,
+            )
 
 
 class FavoriteListView(generics.ListAPIView):
