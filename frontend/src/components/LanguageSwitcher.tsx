@@ -36,18 +36,14 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
 
   if (compact) {
     return (
-      <div className="flex items-center gap-1 px-2">
+      <div className="segmented">
         {SUPPORTED_LANGS.map((code) => (
           <button
             key={code}
             onClick={() => switchLang(code)}
-            className={`px-2 py-1 rounded-lg text-xs font-bold uppercase transition-colors ${
-              current === code
-                ? "bg-[rgba(212,175,55,0.15)] text-gold"
-                : "text-muted hover:text-foreground"
-            }`}
+            className={current === code ? "active" : ""}
           >
-            {code}
+            {LANG_META[code]?.flag} {code.toUpperCase()}
           </button>
         ))}
       </div>

@@ -9,6 +9,7 @@ def health(_request):
 urlpatterns = [
     path("health/", health, name="health"),
     path("v1/auth/", include("apps.accounts.urls")),
+    path("v1/auth/telegram/", include("apps.telegram_bot.urls")),
     path("v1/listings/", include("apps.listings.urls")),
     path("v1/search/", include("apps.search.urls")),
     path("v1/chat/", include("apps.chat.urls")),

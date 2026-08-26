@@ -9,6 +9,8 @@ import { formatPrice } from "@/lib/format";
 import ListingCard from "@/components/ListingCard";
 import SearchBar from "@/components/SearchBar";
 
+const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "";
+
 interface Props {
   newListings: ListingSummary[];
   popular: PopularArea[];
@@ -70,6 +72,34 @@ export default function HomePageClient({ newListings, popular, stats }: Props) {
               ))}
             </div>
           ) : null}
+
+          {BOT_USERNAME && (
+            <div className="mt-8 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
+              <a
+                href={`https://t.me/${BOT_USERNAME}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="telegram-banner block group"
+              >
+                <div className="telegram-banner-inner">
+                  <div className="telegram-banner-content">
+                    <h3 className="display text-lg md:text-xl font-bold text-foreground">{t("telegramBanner.title")}</h3>
+                    <p className="text-sm text-muted mt-1">{t("telegramBanner.description")}</p>
+                    <span className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-[#229ed9] group-hover:text-[#2abeeb] transition-colors">
+                      {t("telegramBanner.cta")}
+                      <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </div>
+                  <div className="telegram-banner-icon">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 md:w-14 md:h-14">
+                      <path d="M24 4C12.954 4 4 12.954 4 24s8.954 20 20 20 20-8.954 20-20S35.046 4 24 4z" fill="#2AABEE"/>
+                      <path d="M34.5 14.5l-3.2 15.2c-.2.9-.8 1.1-1.6.7l-4.5-3.3-2.2 2.1c-.2.2-.5.4-.9.4l.3-4.5 8.1-7.3c.4-.3-.1-.5-.5-.2l-10 6.3-4.3-1.3c-.9-.3-.9-.9.2-1.3l16.8-6.5c.8-.3 1.5.2 1.2 1.4z" fill="#fff"/>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            </div>
+          )}
         </div>
         <div className="gold-line max-w-3xl mx-auto" />
       </section>

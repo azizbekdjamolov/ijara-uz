@@ -221,7 +221,13 @@
     "safetyRules": "Safety rules",
     "phone": "Contact: +998 90 123 45 67",
     "email": "support@ijara.uz",
-    "copyright": "All rights reserved"
+    "copyright": "All rights reserved",
+    "telegramBot": "Telegram bot"
+  },
+  "telegramBanner": {
+    "title": "Use Telegram bot for a better experience",
+    "description": "Track listings via bot, get notifications and connect faster",
+    "cta": "Go to bot"
   },
   "moderation": {
     "title": "Moderation",

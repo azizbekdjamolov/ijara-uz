@@ -13,6 +13,28 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "";
 
+function LogoSvg({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <rect width="40" height="40" rx="12" fill="url(#logo-grad)" />
+      <path
+        d="M12 28V12h3.2c1.8 0 3.2.6 4.1 1.6.8.9 1.3 2.2 1.3 3.7 0 1.5-.5 2.7-1.3 3.6-.9 1-2.3 1.5-4.1 1.5H15v5.6H12zm3-7.8h.3c1.1 0 1.9-.3 2.4-.9.5-.6.8-1.3.8-2.2s-.3-1.6-.8-2.2c-.5-.6-1.3-.9-2.4-.9H15v6.2z"
+        fill="#1a1405"
+      />
+      <path
+        d="M23 28V12h3.2l4.8 10.8V12H34v16h-3.2L26 17.2V28H23z"
+        fill="#1a1405"
+      />
+      <defs>
+        <linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#e8c869" />
+          <stop offset="1" stopColor="#b3902a" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
 export default function RegisterPage() {
   const { t } = useTranslation();
   const { register, registerComplete } = useAuth();
@@ -112,27 +134,24 @@ export default function RegisterPage() {
   const iconClass = "absolute left-3.5 top-1/2 -translate-y-1/2 text-muted";
 
   return (
-    <div className="max-w-md mx-auto px-4 py-10 md:py-16">
-      <div className="animate-fade-in-up">
-        <div className="text-center mb-8">
-          <span className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] items-center justify-center display font-bold text-2xl shadow-[0_10px_30px_rgba(212,175,55,0.4)] mb-5 animate-float">
-            I
-          </span>
-          <h1 className="display text-3xl font-bold text-foreground">{stepTitle}</h1>
-          <p className="text-sm text-muted mt-2">
+    <div className="register-page min-h-screen flex items-center justify-center px-4 py-12 md:py-16">
+      <div className="w-full max-w-[420px] animate-fade-in-up">
+        <div className="text-center mb-6">
+          <LogoSvg className="w-14 h-14 mx-auto mb-4" />
+          <h1 className="display text-2xl md:text-3xl font-bold text-foreground">{stepTitle}</h1>
+          <p className="text-sm text-muted mt-1.5">
             {step === "verify"
               ? t("register.step2Desc", { phone })
               : step === "password"
                 ? t("register.step3Desc")
                 : t("register.step1Desc")}
           </p>
-          <div className="gold-line w-24 mx-auto mt-5" />
           <div className="mt-4 flex justify-center">
             <LanguageSwitcher compact />
           </div>
         </div>
 
-        <div className="card p-6 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
+        <div className="register-card p-6 md:p-7 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
           {step === "form" && BOT_USERNAME && (
             <>
               <TelegramLoginButton />
@@ -180,7 +199,7 @@ export default function RegisterPage() {
                   className="input pl-10"
                 />
               </div>
-              <button type="submit" disabled={submitting} className="btn btn-primary w-full py-3 text-sm">
+              <button type="submit" disabled={submitting} className="register-cta w-full py-3 text-sm font-semibold">
                 {submitting ? (
                   <span className="w-4 h-4 border-2 border-[#1a1405]/30 border-t-[#1a1405] rounded-full animate-spin" />
                 ) : (
@@ -209,7 +228,7 @@ export default function RegisterPage() {
                   className="input pl-10 text-center text-lg tracking-[0.4em]"
                 />
               </div>
-              <button type="submit" disabled={submitting || code.length !== 6} className="btn btn-primary w-full py-3 text-sm">
+              <button type="submit" disabled={submitting || code.length !== 6} className="register-cta w-full py-3 text-sm font-semibold">
                 {submitting ? t("register.submitCodeLoading") : t("register.submitCode")}
               </button>
               <button type="button" onClick={resendCode} className="w-full text-center text-sm text-gold font-medium hover:text-gold-light transition-colors">
@@ -245,7 +264,7 @@ export default function RegisterPage() {
                 </button>
               </div>
               <p className="text-xs text-muted">{t("register.passwordHint")}</p>
-              <button type="submit" disabled={submitting} className="btn btn-primary w-full py-3 text-sm">
+              <button type="submit" disabled={submitting} className="register-cta w-full py-3 text-sm font-semibold">
                 {submitting ? t("register.submitPasswordLoading") : t("register.submitPassword")}
               </button>
             </form>

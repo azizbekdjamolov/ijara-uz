@@ -221,7 +221,13 @@
     "safetyRules": "Правила безопасности",
     "phone": "Контакт: +998 90 123 45 67",
     "email": "support@ijara.uz",
-    "copyright": "Все права защищены"
+    "copyright": "Все права защищены",
+    "telegramBot": "Telegram бот"
+  },
+  "telegramBanner": {
+    "title": "Используйте Telegram бот для удобства",
+    "description": "Отслеживайте объявления через бот, получайте уведомления и общайтесь быстрее",
+    "cta": "Перейти к боту"
   },
   "moderation": {
     "title": "Модерация",

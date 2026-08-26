@@ -221,7 +221,13 @@
     "safetyRules": "Xavfsizlik qoidalari",
     "phone": "Aloqa: +998 90 123 45 67",
     "email": "support@ijara.uz",
-    "copyright": "Barcha huquqlar himoyalangan"
+    "copyright": "Barcha huquqlar himoyalangan",
+    "telegramBot": "Telegram bot"
+  },
+  "telegramBanner": {
+    "title": "Telegram bot orqali qulayroq foydalaning",
+    "description": "E'lonlarni bot orqali kuzating, bildirishnoma oling va tezroq bog'laning",
+    "cta": "Botga o'tish"
   },
   "moderation": {
     "title": "Moderatsiya",

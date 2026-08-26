@@ -20,6 +20,7 @@ interface AuthState {
   register: (phone: string, password: string, fullName: string) => Promise<void>;
   registerComplete: (phone: string, password: string) => Promise<void>;
   telegramLogin: (data: Record<string, unknown>) => Promise<UserProfile>;
+  telegramWebAppLogin: (initData: string) => Promise<UserProfile>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -102,14 +103,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const telegramWebAppLogin = useCallback(
+    async (initData: string) => {
+      const payload = await api.post<{ access: string; refresh: string; user: UserProfile }>(
+        "/auth/telegram/webapp-login/",
+        { initData },
+        undefined,
+        45000
+      );
+      setTokens(payload.access, payload.refresh);
+      setUser(payload.user);
+      return payload.user;
+    },
+    []
+  );
+
   const logout = useCallback(() => {
     clearTokens();
     setUser(null);
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, registerComplete, telegramLogin, logout, refreshUser }),
-    [user, loading, login, register, registerComplete, telegramLogin, logout, refreshUser]
+    () => ({ user, loading, login, register, registerComplete, telegramLogin, telegramWebAppLogin, logout, refreshUser }),
+    [user, loading, login, register, registerComplete, telegramLogin, telegramWebAppLogin, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

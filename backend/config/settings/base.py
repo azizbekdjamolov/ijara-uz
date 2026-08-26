@@ -45,6 +45,7 @@ LOCAL_APPS = [
     "apps.search",
     "apps.analytics",
     "apps.admin_panel",
+    "apps.telegram_bot",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -255,6 +256,10 @@ GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
 # Telegram Login Widget bot token (optional). Enables "Kirish Telegram orqali".
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN", default="")
 TELEGRAM_BOT_DOMAIN = env("TELEGRAM_BOT_DOMAIN", default="https://ijara-frontend.onrender.com")
+
+# Telegram channel ID for posting new listings (optional).
+# Numeric chat_id or @channel_username string. Leave empty to disable auto-posting.
+TELEGRAM_CHANNEL_ID = env("TELEGRAM_CHANNEL_ID", default="")
 
 # ---------------------------------------------------------------------------
 # Logging

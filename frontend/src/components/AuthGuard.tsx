@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { getAccessToken } from "@/lib/api";
 
-const PUBLIC_PATHS = ["/login", "/register", "/auth/"];
+const PUBLIC_PATHS = ["/login", "/register", "/auth/", "/telegram-app"];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname.startsWith(p));
