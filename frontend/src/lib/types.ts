@@ -169,3 +169,26 @@ export interface PlatformStats {
   districts: number;
   verified_owners: number;
 }
+
+export interface AdminStats {
+  total_users: number;
+  total_listings: number;
+  pending_review: number;
+  needs_review: number;
+  published: number;
+  banned_users: number;
+  admin_count: number;
+}
+
+export interface AdminUser {
+  id: string;
+  phone: string;
+  email: string | null;
+  full_name: string;
+  role: string;
+  is_banned: boolean;
+  is_phone_verified: boolean;
+  is_profile_verified: boolean;
+  date_joined: string | null;
+  active_listings: number;
+}

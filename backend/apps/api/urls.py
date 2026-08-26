@@ -16,4 +16,5 @@ urlpatterns = [
     path("v1/verification/", include("apps.verification.urls")),
     path("v1/moderation/", include("apps.moderation.urls")),
     path("v1/analytics/", include("apps.analytics.urls")),
+    path("v1/admin-panel/", include("apps.admin_panel.urls")),
 ]

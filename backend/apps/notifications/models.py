@@ -13,6 +13,7 @@ class NotificationType(models.TextChoices):
     NEW_MESSAGE = "new_message", "Yangi xabar"
     REPORT_UPDATE = "report_update", "Shikoyat holati"
     VERIFICATION_RESULT = "verification_result", "Tasdiqlash natijasi"
+    ADMIN_ASSIGNMENT = "admin_assignment", "Admin tayinlangan"
     SYSTEM = "system", "Tizim xabari"
 
 

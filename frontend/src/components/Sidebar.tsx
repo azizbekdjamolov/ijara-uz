@@ -13,6 +13,7 @@ import {
   Moon,
   Plus,
   Search,
+  Shield,
   ShieldCheck,
   Sun,
   User,
@@ -83,6 +84,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     ...(user?.role === "moderator" || user?.role === "admin"
       ? [{ href: "/moderatsiya", label: t("nav.moderation"), icon: ShieldCheck, badge: 0 }]
       : []),
+    ...(user?.role === "admin"
+      ? [{ href: "/admin", label: "Admin panel", icon: Shield, badge: 0 }]
+      : []),
   ];
 
   return (
@@ -134,7 +138,14 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 {(user.full_name || "F").charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="font-semibold text-sm truncate">{user.full_name || t("nav.profile")}</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-sm truncate">{user.full_name || t("nav.profile")}</span>
+                  {user.role === "admin" && (
+                    <span className="shrink-0 px-1.5 py-0.5 rounded-full bg-[rgba(212,175,55,0.15)] text-gold text-[9px] font-bold uppercase tracking-wider">
+                      Admin
+                    </span>
+                  )}
+                </div>
                 <div className="text-xs text-muted truncate">
                   {user.telegram_username ? `@${user.telegram_username}` : user.phone ?? ""}
                 </div>
