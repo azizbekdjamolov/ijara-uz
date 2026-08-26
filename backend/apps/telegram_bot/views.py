@@ -65,16 +65,44 @@ def _handle_message(message: dict) -> None:
     chat_id = message["chat"]["id"]
     text = (message.get("text") or "").strip()
     first_name = message.get("from", {}).get("first_name", "")
+    telegram_id = message.get("from", {}).get("id")
 
     logger.info("[webhook] message from chat=%s text=%s", chat_id, text)
 
     from apps.telegram_bot.services import send_message
+    from apps.telegram_bot.services.login_code import generate_login_code
 
-    if text in BOT_COMMANDS:
-        reply = BOT_COMMANDS[text]
-        if first_name:
-            reply = f"{first_name}, salom!\n\n" + reply
+    if text in ("/start", "/help"):
+        if text == "/start" and telegram_id:
+            code = generate_login_code(telegram_id)
+            login_url = f"https://ijara-frontend.onrender.com/login?tg_code={code}"
+            reply = (
+                f"Salom, {first_name}! 👋\n\n"
+                "Ijara.uz ga kirish uchun quyidagi kodni saytda kiriting:\n\n"
+                f"🔑 <b>{code}</b>\n\n"
+                f"Yoki to'g'ridan-to'g'ri o'ting:\n{login_url}\n\n"
+                "Kod 5 daqiqa ichida yaroqsiz bo'ladi."
+            )
+        elif text == "/start":
+            reply = BOT_COMMANDS["/start"]
+        else:
+            reply = BOT_COMMANDS["/help"]
+
+        if first_name and text == "/help":
+            reply = f"{first_name}, sizga qanday yordam bera olaman?\n\n" + reply
+
         send_message(chat_id, reply)
+    elif text == "/login":
+        if telegram_id:
+            code = generate_login_code(telegram_id)
+            send_message(
+                chat_id,
+                f"🔑 Tasdiqlash kodi: <b>{code}</b>\n\n"
+                "Uni https://ijara-frontend.onrender.com/login sahifasida kiriting.\n"
+                "Kod 5 daqiqa ichida yaroqsiz bo'ladi.",
+            )
+        else:
+            send_message(chat_id, "Xatolik yuz berdi.")
     elif text.startswith("/"):
         send_message(
             chat_id,
@@ -194,6 +222,62 @@ class WebAppLoginView(APIView):
 
         except Exception as exc:
             logger.exception("Telegram WebApp login xatolik: %s", exc)
+            return Response(
+                {"message": "Tizimga kirishda xatolik."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+# ─── One-time login code verification ──────────────────────────────────────
+
+
+class VerifyLoginCodeView(APIView):
+    """Verify a one-time code sent by the Telegram bot.
+
+    POST /api/v1/auth/telegram/verify-code/
+    Body: { "code": "123456" }
+    """
+
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [AuthAnonRateThrottle]
+
+    def post(self, request):
+        code = (request.data.get("code") or "").strip()
+        if not code or len(code) != 6 or not code.isdigit():
+            return Response(
+                {"message": "Noto'g'ri kod formati. 6 ta raqam kiriting."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from apps.telegram_bot.services.login_code import verify_login_code
+
+        telegram_id = verify_login_code(code)
+        if telegram_id is None:
+            return Response(
+                {"message": "Kod noto'g'ri yoki muddati o'tgan."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            from apps.accounts.services.telegram_service import get_or_create_telegram_user
+
+            user = get_or_create_telegram_user(telegram_id=telegram_id)
+
+            if user.is_banned:
+                return Response(
+                    {"message": "Akkaunt bloklangan."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": UserSerializer(user).data,
+            })
+
+        except Exception as exc:
+            logger.exception("[verify-code] xatolik: %s", exc)
             return Response(
                 {"message": "Tizimga kirishda xatolik."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,

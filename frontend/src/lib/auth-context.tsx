@@ -21,6 +21,7 @@ interface AuthState {
   registerComplete: (phone: string, password: string) => Promise<void>;
   telegramLogin: (data: Record<string, unknown>) => Promise<UserProfile>;
   telegramWebAppLogin: (initData: string) => Promise<UserProfile>;
+  telegramCodeLogin: (code: string) => Promise<UserProfile>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -120,14 +121,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const telegramCodeLogin = useCallback(
+    async (code: string) => {
+      const payload = await api.post<{ access: string; refresh: string; user: UserProfile }>(
+        "/auth/telegram/verify-code/",
+        { code },
+        undefined,
+        30000,
+        1
+      );
+      setTokens(payload.access, payload.refresh);
+      setUser(payload.user);
+      return payload.user;
+    },
+    []
+  );
+
   const logout = useCallback(() => {
     clearTokens();
     setUser(null);
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, registerComplete, telegramLogin, telegramWebAppLogin, logout, refreshUser }),
-    [user, loading, login, register, registerComplete, telegramLogin, telegramWebAppLogin, logout, refreshUser]
+    () => ({ user, loading, login, register, registerComplete, telegramLogin, telegramWebAppLogin, telegramCodeLogin, logout, refreshUser }),
+    [user, loading, login, register, registerComplete, telegramLogin, telegramWebAppLogin, telegramCodeLogin, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

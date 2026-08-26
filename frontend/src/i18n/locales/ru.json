@@ -146,7 +146,12 @@
     "telegramError": "Ошибка входа через Telegram",
     "invalidCredentials": "Неверный телефон или пароль. Попробуйте снова",
     "accountExists": "Этот аккаунт уже существует. Войдите в систему",
-    "serverWaking": "Сервер просыпается, подождите..."
+    "serverWaking": "Сервер просыпается, подождите...",
+    "codeInvalid": "Неверный код или код истёк",
+    "codeInstructions": "Отправьте /start боту в Telegram и введите код:",
+    "verifyCode": "Проверить",
+    "useCode": "Войти по коду",
+    "backToWidget": "← Вернуться к Telegram виджету"
   },
   "register": {
     "title": "Регистрация",

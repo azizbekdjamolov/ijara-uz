@@ -146,7 +146,12 @@
     "telegramError": "Error signing in via Telegram",
     "invalidCredentials": "Invalid phone or password. Please try again",
     "accountExists": "This account already exists. Please sign in",
-    "serverWaking": "Server is waking up, please wait..."
+    "serverWaking": "Server is waking up, please wait...",
+    "codeInvalid": "Invalid code or code expired",
+    "codeInstructions": "Send /start to the bot in Telegram and enter the code:",
+    "verifyCode": "Verify",
+    "useCode": "Sign in with code",
+    "backToWidget": "← Back to Telegram widget"
   },
   "register": {
     "title": "Register",

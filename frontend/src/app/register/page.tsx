@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -156,7 +156,9 @@ export default function RegisterPage() {
         <div className="register-card p-6 md:p-7 animate-fade-in-up" style={{ animationDelay: "0.05s" }}>
           {step === "form" && BOT_USERNAME && (
             <>
-              <TelegramLoginButton />
+              <Suspense fallback={null}>
+                <TelegramLoginButton />
+              </Suspense>
               <div className="flex items-center gap-3 my-5">
                 <span className="flex-1 h-px bg-[var(--border)]" />
                 <span className="text-xs text-muted font-medium">{t("login.orPhone")}</span>

@@ -146,7 +146,12 @@
     "telegramError": "Telegram orqali kirishda xatolik",
     "invalidCredentials": "Telefon yoki parol noto'g'ri. Qaytadan urinib ko'ring",
     "accountExists": "Bu akkaunt allaqachon mavjud. Tizimga kiring",
-    "serverWaking": "Server uyg'onmoqda, biroz kuting..."
+    "serverWaking": "Server uyg'onmoqda, biroz kuting...",
+    "codeInvalid": "Kod noto'g'ri yoki muddati o'tgan",
+    "codeInstructions": "Telegram'da botga /start yozing va kodni kiriting:",
+    "verifyCode": "Tasdiqlash",
+    "useCode": "Kod orqali kirish",
+    "backToWidget": "← Telegram widget ga qaytish"
   },
   "register": {
     "title": "Ro'yxatdan o'tish",
