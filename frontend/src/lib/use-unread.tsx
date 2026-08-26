@@ -1,33 +1,73 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { api, getAccessToken } from "./api";
 
-export function useUnreadCount(pollMs = 30000) {
-  const [count, setCount] = useState(0);
+let sharedCount = 0;
+let sharedTimer: ReturnType<typeof setInterval> | null = null;
+const listeners = new Set<() => void>();
 
-  const refresh = useCallback(async () => {
+function notify() {
+  for (const fn of listeners) fn();
+}
+
+function startPolling(pollMs: number) {
+  if (sharedTimer) return;
+  const tick = async () => {
     if (!getAccessToken()) {
-      setCount(0);
+      sharedCount = 0;
+      notify();
       return;
     }
     try {
       const data = await api.get<{ count: number }>("/chat/unread-count/");
-      setCount(data.count ?? 0);
+      sharedCount = data.count ?? 0;
+      notify();
+    } catch {
+      /* silent */
+    }
+  };
+  tick();
+  sharedTimer = setInterval(tick, pollMs);
+}
+
+function stopPolling() {
+  if (sharedTimer) {
+    clearInterval(sharedTimer);
+    sharedTimer = null;
+  }
+}
+
+export function useUnreadCount(pollMs = 30000) {
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const listener = () => setTick((n) => n + 1);
+    listeners.add(listener);
+    startPolling(pollMs);
+    return () => {
+      listeners.delete(listener);
+      if (listeners.size === 0) stopPolling();
+    };
+  }, [pollMs]);
+
+  const refresh = useCallback(async () => {
+    if (!getAccessToken()) {
+      sharedCount = 0;
+      notify();
+      return;
+    }
+    try {
+      const data = await api.get<{ count: number }>("/chat/unread-count/");
+      sharedCount = data.count ?? 0;
+      notify();
     } catch {
       /* silent */
     }
   }, []);
 
-  useEffect(() => {
-    refresh();
-    if (!pollMs) return;
-    const timer = setInterval(refresh, pollMs);
-    return () => clearInterval(timer);
-  }, [refresh, pollMs]);
-
-  return { count, refresh };
+  return { count: sharedCount, refresh };
 }
 
 export function UnreadBadge({ count }: { count: number }) {

@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = useCallback(async () => {
     if (!getAccessToken()) {
       setUser(null);
+      setLoading(false);
       return;
     }
     try {
