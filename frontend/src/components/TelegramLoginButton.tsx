@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import Link from "next/link";
 
 import { useAuth } from "@/lib/auth-context";
 import { ApiRequestError } from "@/lib/api";
@@ -69,6 +70,8 @@ export default function TelegramLoginButton() {
     script.setAttribute("data-radius", "10");
     script.setAttribute("data-userpic", "true");
     script.setAttribute("data-onauth", "window.onTelegramAuth(user)");
+    const origin = window.location.origin;
+    script.setAttribute("data-origin", origin);
     container.appendChild(script);
 
     const failTimer = window.setTimeout(() => setWidgetFailed(true), 8000);
@@ -94,15 +97,15 @@ export default function TelegramLoginButton() {
         <div className="text-xs text-danger text-center">{error}</div>
       )}
       <div ref={containerRef} />
-      {widgetFailed && !loading && (
-        <a
-          href={`https://t.me/${BOT_USERNAME}`}
+      {widgetFailed && !loading && !error && (
+        <Link
+          href={`https://t.me/${BOT_USERNAME}?start=auth`}
+          className="btn btn-primary w-full py-3 text-sm flex items-center justify-center gap-2"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-gold font-medium hover:text-gold-light transition-colors"
         >
-          {t("login.telegramFallback", { username: BOT_USERNAME })}
-        </a>
+          {t("login.telegramBtn")}
+        </Link>
       )}
     </div>
   );

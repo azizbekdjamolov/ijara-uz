@@ -40,7 +40,7 @@ services:
       - key: TELEGRAM_BOT_TOKEN
         value: 8802284432:AAEUy5_VQ9fL9WjUWUeApuaBQ0t2R5d6ULA
       - key: TELEGRAM_BOT_DOMAIN
-        value: https://ijara-frontend.onrender.com
+        value: https://ijara-frontend.onrender.com,http://localhost:3000
 
   # ---------------------------------------------------------------------------
   # Celery worker (AI analysis, notifications, moderation jobs)
