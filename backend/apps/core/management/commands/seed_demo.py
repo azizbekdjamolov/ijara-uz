@@ -84,7 +84,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--listings", type=int, default=24)
-        parser.add_argument("--publish", action="store_true", default=True)
+        parser.add_argument("--publish", action="store_true", default=False,
+                            help="Auto-run AI analysis on seeded listings (default: keep as pending)")
 
     def handle(self, *args, **options):
         for key, label in AMENITIES:

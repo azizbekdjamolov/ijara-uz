@@ -175,6 +175,9 @@ class MapSearchView(APIView):
         for listing in qs:
             images = getattr(listing, "prefetched_images", None) or list(listing.images.all())
             primary = next((i for i in images if i.is_primary), images[0] if images else None)
+            thumb_url = None
+            if primary and primary.thumb:
+                thumb_url = request.build_absolute_uri(primary.thumb.url)
             markers.append(
                 {
                     "id": str(listing.id),
@@ -187,7 +190,7 @@ class MapSearchView(APIView):
                     "rooms": listing.prop.rooms,
                     "area": listing.prop.area,
                     "location_accuracy": listing.prop.location_accuracy,
-                    "thumb": primary.thumb.url if primary and primary.thumb else None,
+                    "thumb": thumb_url,
                 }
             )
         return Response({"count": len(markers), "markers": markers})

@@ -1,5 +1,7 @@
 ﻿from rest_framework import serializers
 
+import re
+
 from apps.accounts.models import User
 from apps.listings.models import Listing, ListingImage, Property, Report
 from apps.listings.services.listing_service import ListingService
@@ -73,6 +75,10 @@ class PropertyWriteSerializer(serializers.ModelSerializer):
     def validate_area(self, value):
         if value is not None and value <= 0:
             raise serializers.ValidationError("Maydon musbat son bo'lishi kerak.")
+        if value is not None and value < 10:
+            raise serializers.ValidationError("Maydon kamida 10 m² bo'lishi kerak.")
+        if value is not None and value > 1000:
+            raise serializers.ValidationError("Maydon 1000 m² dan oshmasligi kerak.")
         return value
 
     def validate_price(self, value):
@@ -220,6 +226,8 @@ class ListingDetailSerializer(ListingSummarySerializer):
 class ListingWriteSerializer(serializers.ModelSerializer):
     property = PropertyWriteSerializer(source="prop")
 
+    MAX_PRICE = 50_000_000
+
     class Meta:
         model = Listing
         fields = ("id", "title", "price", "currency", "property")
@@ -228,11 +236,19 @@ class ListingWriteSerializer(serializers.ModelSerializer):
     def validate_title(self, value):
         if len(value) < 10:
             raise serializers.ValidationError("Sarlavha kamida 10 belgidan iborat bo'lishi kerak.")
+        if re.fullmatch(r"[a-zA-Z0-9]{10,}", value):
+            raise serializers.ValidationError(
+                "Sarlavha ma'nosiz belgilardan tashkil topmasligi kerak."
+            )
         return value
 
     def validate_price(self, value):
         if value <= 0:
             raise serializers.ValidationError("Narx musbat son bo'lishi kerak.")
+        if value > self.MAX_PRICE:
+            raise serializers.ValidationError(
+                f"Narx {self.MAX_PRICE:,} so'mdan oshmasligi kerak."
+            )
         return value
 
     def create(self, validated_data):
