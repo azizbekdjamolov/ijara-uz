@@ -75,23 +75,31 @@ def _handle_message(message: dict) -> None:
     if text in ("/start", "/help"):
         if text == "/start" and telegram_id:
             code = generate_login_code(telegram_id)
-            login_url = f"https://ijara-frontend.onrender.com/login?tg_code={code}"
+            mini_app_url = "https://ijara-frontend.onrender.com/telegram-app"
             reply = (
                 f"Salom, {first_name}! 👋\n\n"
-                "Ijara.uz ga kirish uchun quyidagi kodni saytda kiriting:\n\n"
-                f"🔑 <b>{code}</b>\n\n"
-                f"Yoki to'g'ridan-to'g'ri o'ting:\n{login_url}\n\n"
-                "Kod 5 daqiqa ichida yaroqsiz bo'ladi."
+                "Ijara.uz — O'zbekistonda uy-joy ijarasi.\n\n"
+                "Quyidagi tugmalar orqali foydalanishingiz mumkin:"
             )
+            reply_markup = {
+                "inline_keyboard": [
+                    [{"text": "🏠 Ijara.uz ochish", "web_app": {"url": mini_app_url}}],
+                    [{"text": "🔑 Kod orqali kirish", "callback_data": "login_code"}],
+                    [{"text": "📋 Yordam", "callback_data": "help"}],
+                ]
+            }
         elif text == "/start":
             reply = BOT_COMMANDS["/start"]
+            reply_markup = None
         else:
             reply = BOT_COMMANDS["/help"]
+            reply_markup = None
 
         if first_name and text == "/help":
             reply = f"{first_name}, sizga qanday yordam bera olaman?\n\n" + reply
 
-        send_message(chat_id, reply)
+        from apps.telegram_bot.services import send_message as _send
+        _send(chat_id, reply, reply_markup=reply_markup)
     elif text == "/login":
         if telegram_id:
             code = generate_login_code(telegram_id)
@@ -115,6 +123,35 @@ def _handle_message(message: dict) -> None:
         )
 
 
+def _handle_callback(callback: dict) -> None:
+    """Handle inline keyboard callback queries."""
+    from apps.telegram_bot.services import send_message, _post
+    from apps.telegram_bot.services.login_code import generate_login_code
+
+    chat_id = callback["message"]["chat"]["id"]
+    data = callback.get("data", "")
+    telegram_id = callback.get("from", {}).get("id")
+
+    # Answer the callback to remove loading state
+    try:
+        _post("answerCallbackQuery", json={"callback_query_id": callback["id"]})
+    except Exception:
+        pass
+
+    logger.info("[webhook] callback from chat=%s data=%s", chat_id, data)
+
+    if data == "login_code" and telegram_id:
+        code = generate_login_code(telegram_id)
+        send_message(
+            chat_id,
+            f"🔑 Tasdiqlash kodi: <b>{code}</b>\n\n"
+            "Saytda \"Kod orqali kirish\" ni bosing va kodni kiriting.\n"
+            "Kod 5 daiqqa ichida yaroqsiz bo'ladi.",
+        )
+    elif data == "help":
+        send_message(chat_id, BOT_COMMANDS["/help"])
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class TelegramWebhookView(View):
     """Receive updates from Telegram via webhook."""
@@ -129,11 +166,17 @@ class TelegramWebhookView(View):
             return HttpResponse("bad json", status=400)
 
         message = update.get("message")
+        callback = update.get("callback_query")
         if message:
             try:
                 _handle_message(message)
             except Exception as exc:
                 logger.exception("[webhook] xabarni qayta ishlashda xatolik: %s", exc)
+        if callback:
+            try:
+                _handle_callback(callback)
+            except Exception as exc:
+                logger.exception("[webhook] callback qayta ishlashda xatolik: %s", exc)
 
         return HttpResponse("ok")
 
