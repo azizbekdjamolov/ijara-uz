@@ -38,7 +38,9 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: TELEGRAM_BOT_TOKEN
-        sync: false
+        value: 8802284432:AAEUy5_VQ9fL9WjUWUeApuaBQ0t2R5d6ULA
+      - key: TELEGRAM_BOT_DOMAIN
+        value: https://ijara-frontend.onrender.com
 
   # ---------------------------------------------------------------------------
   # Celery worker (AI analysis, notifications, moderation jobs)
@@ -67,7 +69,7 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: TELEGRAM_BOT_TOKEN
-        sync: false
+        value: 8802284432:AAEUy5_VQ9fL9WjUWUeApuaBQ0t2R5d6ULA
 
   # ---------------------------------------------------------------------------
   # Next.js frontend
@@ -84,7 +86,7 @@ services:
       - key: NEXT_PUBLIC_API_URL
         value: https://ijara-api.onrender.com/api/v1
       - key: NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
-        sync: false
+        value: ijaralaruz_bot
 
   # ---------------------------------------------------------------------------
   # One-off: seed demo data (admin + listings). Run manually from dashboard.

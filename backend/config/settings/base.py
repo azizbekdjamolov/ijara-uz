@@ -253,6 +253,7 @@ GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
 
 # Telegram Login Widget bot token (optional). Enables "Kirish Telegram orqali".
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN", default="")
+TELEGRAM_BOT_DOMAIN = env("TELEGRAM_BOT_DOMAIN", default="https://ijara-frontend.onrender.com")
 
 # ---------------------------------------------------------------------------
 # Logging
