@@ -145,7 +145,8 @@
     "telegramLoading": "Telegram orqali kiritilmoqda...",
     "telegramError": "Telegram orqali kirishda xatolik",
     "invalidCredentials": "Telefon yoki parol noto'g'ri. Qaytadan urinib ko'ring",
-    "accountExists": "Bu akkaunt allaqachon mavjud. Tizimga kiring"
+    "accountExists": "Bu akkaunt allaqachon mavjud. Tizimga kiring",
+    "serverWaking": "Server uyg'onmoqda, biroz kuting..."
   },
   "register": {
     "title": "Ro'yxatdan o'tish",
@@ -174,7 +175,8 @@
     "loginLink": "Kiring",
     "phoneError": "Telefon raqam +998XXXXXXXXX formatida bo'lishi kerak. Masalan: +998901234567",
     "nameError": "Ism familiya kiriting",
-    "accountAlreadyExists": "Bu telefon raqam allaqachon ro'yxatdan o'tgan. Tizimga kiring"
+    "accountAlreadyExists": "Bu telefon raqam allaqachon ro'yxatdan o'tgan. Tizimga kiring",
+    "serverWaking": "Server uyg'onmoqda, biroz kuting..."
   },
   "profile": {
     "title": "Profil",

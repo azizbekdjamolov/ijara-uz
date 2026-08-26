@@ -88,7 +88,7 @@ services:
     startCommand: npm start
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        value: https://ijara-api.onrender.com/api/v1
+        value: https://ijara-api-4jkr.onrender.com/api/v1
       - key: NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
         value: ijaralaruz_bot
 

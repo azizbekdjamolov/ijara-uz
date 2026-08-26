@@ -145,7 +145,8 @@
     "telegramLoading": "Signing in via Telegram...",
     "telegramError": "Error signing in via Telegram",
     "invalidCredentials": "Invalid phone or password. Please try again",
-    "accountExists": "This account already exists. Please sign in"
+    "accountExists": "This account already exists. Please sign in",
+    "serverWaking": "Server is waking up, please wait..."
   },
   "register": {
     "title": "Register",
@@ -174,7 +175,8 @@
     "loginLink": "Sign in",
     "phoneError": "Phone must be in +998XXXXXXXXX format. Example: +998901234567",
     "nameError": "Enter your full name",
-    "accountAlreadyExists": "This phone number is already registered. Please sign in"
+    "accountAlreadyExists": "This phone number is already registered. Please sign in",
+    "serverWaking": "Server is waking up, please wait..."
   },
   "profile": {
     "title": "Profile",

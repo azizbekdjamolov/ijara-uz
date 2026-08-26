@@ -50,8 +50,13 @@ function LoginForm() {
     try {
       await login(identifier.trim(), password);
       router.push(searchParams.get("next") ?? "/");
-    } catch {
-      setError(t("login.invalidCredentials"));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("uyg'onmoqda") || msg.includes("kuting")) {
+        setError(t("login.serverWaking"));
+      } else {
+        setError(t("login.invalidCredentials"));
+      }
       setSubmitting(false);
     }
   };

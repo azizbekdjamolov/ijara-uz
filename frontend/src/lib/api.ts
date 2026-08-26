@@ -56,7 +56,6 @@ async function refreshAccess(): Promise<string | null> {
     setTokens(data.access, refresh);
     return data.access;
   } catch {
-    // Tarmoq uzildi yoki timeout - qulash emas
     return null;
   }
 }
@@ -95,11 +94,19 @@ function flattenDrfErrors(data: unknown): Record<string, string> {
   return result;
 }
 
+const NETWORK_ERRORS_MAX_RETRIES = 3;
+const BASE_TIMEOUT_MS = 20000;
+const RETRY_DELAYS_MS = [5000, 10000, 20000];
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
   retry = true,
-  timeoutMs = 15000
+  timeoutMs = BASE_TIMEOUT_MS
 ): Promise<T> {
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> | undefined),
@@ -110,52 +117,69 @@ async function request<T>(
   const token = getAccessToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  let response: Response;
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
-    response = await fetch(`${API_URL}${path}`, { ...options, headers, signal: controller.signal });
-    clearTimeout(timeout);
-  } catch (err) {
-    // Tarmoq xatosi - sayt qulamaydi, chiroyli xabar
-    const isAbort = err instanceof DOMException && err.name === "AbortError";
-    throw new ApiRequestError(0, isAbort ? "So'rov vaqti tugadi, internetni tekshiring" : "Tarmoq xatosi, serverga ulanib bo'lmadi");
-  }
+  let lastNetworkErr: Error | null = null;
 
-  if (response.status === 401 && token && retry) {
-    const fresh = await refreshAccess();
-    if (fresh) return request<T>(path, options, false);
-  }
-
-  const contentType = response.headers.get("content-type") ?? "";
-  let data: unknown = null;
-  if (contentType.includes("application/json")) {
+  for (let attempt = 0; attempt <= NETWORK_ERRORS_MAX_RETRIES; attempt++) {
+    let response: Response;
     try {
-      data = await response.json();
-    } catch {
-      data = null;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
+      response = await fetch(`${API_URL}${path}`, { ...options, headers, signal: controller.signal });
+      clearTimeout(timeout);
+      lastNetworkErr = null;
+    } catch (err) {
+      lastNetworkErr = err as Error;
+      if (attempt < NETWORK_ERRORS_MAX_RETRIES) {
+        await sleep(RETRY_DELAYS_MS[attempt]);
+        continue;
+      }
+      const isAbort = err instanceof DOMException && err.name === "AbortError";
+      throw new ApiRequestError(
+        0,
+        isAbort
+          ? "Server uyg'onmoqda, biroz kuting..."
+          : "Server bilan bog'lanib bo'lmadi, keyinroq urinib ko'ring"
+      );
     }
-  } else {
-    // Ba'zan backend HTML qaytaradi (500) - uni JSON deb o'qishga urinmaymiz
-    try {
-      const text = await response.text();
-      if (text) data = { message: text.slice(0, 300) } as unknown;
-    } catch {
-      data = null;
+
+    if (response.status === 401 && token && retry) {
+      const fresh = await refreshAccess();
+      if (fresh) return request<T>(path, options, false);
     }
+
+    const contentType = response.headers.get("content-type") ?? "";
+    let data: unknown = null;
+    if (contentType.includes("application/json")) {
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
+    } else {
+      try {
+        const text = await response.text();
+        if (text) data = { message: text.slice(0, 300) } as unknown;
+      } catch {
+        data = null;
+      }
+    }
+
+    if (!response.ok) {
+      const fieldErrors = flattenDrfErrors(data);
+      const message =
+        (data as ApiError)?.message ??
+        (data as { detail?: string })?.detail ??
+        (Object.keys(fieldErrors).length > 0
+          ? Object.values(fieldErrors)[0]
+          : `Xatolik yuz berdi (${response.status})`);
+      throw new ApiRequestError(response.status || 500, message, fieldErrors);
+    }
+    return data as T;
   }
 
-  if (!response.ok) {
-    const fieldErrors = flattenDrfErrors(data);
-    const message =
-      (data as ApiError)?.message ??
-      (data as { detail?: string })?.detail ??
-      (Object.keys(fieldErrors).length > 0
-        ? Object.values(fieldErrors)[0]
-        : `Xatolik yuz berdi (${response.status})`);
-    throw new ApiRequestError(response.status || 500, message, fieldErrors);
-  }
-  return data as T;
+  throw lastNetworkErr
+    ? new ApiRequestError(0, "Server bilan bog'lanib bo'lmadi, keyinroq urinib ko'ring")
+    : new ApiRequestError(0, "Noma'lum xatolik");
 }
 
 export const api = {

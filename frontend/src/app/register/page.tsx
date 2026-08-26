@@ -77,6 +77,8 @@ export default function RegisterPage() {
       const msg = err instanceof Error ? err.message : "";
       if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("allaqachon") || msg.toLowerCase().includes("mavjud")) {
         setError(t("register.accountAlreadyExists"));
+      } else if (msg.includes("uyg'onmoqda") || msg.includes("kuting")) {
+        setError(t("register.serverWaking"));
       } else {
         setError(msg || t("common.error"));
       }
