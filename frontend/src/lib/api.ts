@@ -78,7 +78,8 @@ export class ApiRequestError extends Error {
 async function request<T>(
   path: string,
   options: RequestInit = {},
-  retry = true
+  retry = true,
+  timeoutMs = 15000
 ): Promise<T> {
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> | undefined),
@@ -92,7 +93,7 @@ async function request<T>(
   let response: Response;
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
     response = await fetch(`${API_URL}${path}`, { ...options, headers, signal: controller.signal });
     clearTimeout(timeout);
   } catch (err) {
@@ -136,8 +137,8 @@ async function request<T>(
 
 export const api = {
   get: <T>(path: string, options?: RequestInit) => request<T>(path, options),
-  post: <T>(path: string, body?: unknown, options?: RequestInit) =>
-    request<T>(path, { ...options, method: "POST", body: JSON.stringify(body) }),
+  post: <T>(path: string, body?: unknown, options?: RequestInit, timeoutMs?: number) =>
+    request<T>(path, { ...options, method: "POST", body: JSON.stringify(body) }, true, timeoutMs),
   patch: <T>(path: string, body?: unknown, options?: RequestInit) =>
     request<T>(path, { ...options, method: "PATCH", body: JSON.stringify(body) }),
   del: <T>(path: string, options?: RequestInit) =>

@@ -90,7 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (data: Record<string, unknown>) => {
       const payload = await api.post<{ access: string; refresh: string; user: UserProfile }>(
         "/auth/telegram/",
-        data
+        data,
+        undefined,
+        45000
       );
       setTokens(payload.access, payload.refresh);
       setUser(payload.user);

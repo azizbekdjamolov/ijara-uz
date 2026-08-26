@@ -25,7 +25,9 @@ export default function TelegramLoginButton() {
   const [loading, setLoading] = useState(false);
   const [widgetFailed, setWidgetFailed] = useState(false);
 
-  const handleAuth = useCallback(async (tgUser: Record<string, unknown>) => {
+  const MAX_RETRIES = 2;
+
+  const handleAuth = useCallback(async (tgUser: Record<string, unknown>, attempt = 0) => {
     setLoading(true);
     setError(null);
     try {
@@ -38,6 +40,13 @@ export default function TelegramLoginButton() {
       router.refresh();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
+      const isTimeout = e instanceof ApiRequestError && e.status === 0 && msg.includes("tugadi");
+
+      if (isTimeout && attempt < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, 2000));
+        return handleAuth(tgUser, attempt + 1);
+      }
+
       if (
         e instanceof ApiRequestError &&
         (e.status === 400 || e.status === 409) &&
