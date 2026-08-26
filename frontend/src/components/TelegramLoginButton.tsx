@@ -17,7 +17,7 @@ declare global {
 }
 
 export default function TelegramLoginButton() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { telegramLogin, user } = useAuth();
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -69,7 +69,10 @@ export default function TelegramLoginButton() {
 
     window.onTelegramAuth = handleAuth;
 
-    if (container.childElementCount > 0) return;
+    container.innerHTML = "";
+    setWidgetFailed(false);
+
+    const lang = i18n.language || "en";
 
     const script = document.createElement("script");
     script.async = true;
@@ -78,9 +81,9 @@ export default function TelegramLoginButton() {
     script.setAttribute("data-size", "large");
     script.setAttribute("data-radius", "10");
     script.setAttribute("data-userpic", "true");
+    script.setAttribute("data-lang", lang);
     script.setAttribute("data-onauth", "window.onTelegramAuth(user)");
-    const origin = window.location.origin;
-    script.setAttribute("data-origin", origin);
+    script.setAttribute("data-origin", window.location.origin);
     container.appendChild(script);
 
     const failTimer = window.setTimeout(() => setWidgetFailed(true), 8000);
@@ -89,7 +92,7 @@ export default function TelegramLoginButton() {
       window.clearTimeout(failTimer);
       window.onTelegramAuth = undefined;
     };
-  }, [handleAuth]);
+  }, [handleAuth, i18n.language]);
 
   if (!BOT_USERNAME) {
     return null;
