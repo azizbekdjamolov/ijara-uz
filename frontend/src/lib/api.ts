@@ -68,11 +68,31 @@ export interface ApiError {
 
 export class ApiRequestError extends Error {
   status: number;
+  fieldErrors: Record<string, string>;
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, fieldErrors: Record<string, string> = {}) {
     super(message);
     this.status = status;
+    this.fieldErrors = fieldErrors;
   }
+}
+
+function flattenDrfErrors(data: unknown): Record<string, string> {
+  if (!data || typeof data !== "object") return {};
+  const result: Record<string, string> = {};
+  const obj = data as Record<string, unknown>;
+  for (const [key, value] of Object.entries(obj)) {
+    if (key === "message" || key === "detail" || key === "non_field_errors") continue;
+    if (Array.isArray(value) && value.length > 0) {
+      result[key] = String(value[0]);
+    } else if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      const nested = flattenDrfErrors(value);
+      for (const [nk, nv] of Object.entries(nested)) {
+        result[nk] = nv;
+      }
+    }
+  }
+  return result;
 }
 
 async function request<T>(
@@ -126,11 +146,14 @@ async function request<T>(
   }
 
   if (!response.ok) {
+    const fieldErrors = flattenDrfErrors(data);
     const message =
       (data as ApiError)?.message ??
       (data as { detail?: string })?.detail ??
-      `Xatolik yuz berdi (${response.status})`;
-    throw new ApiRequestError(response.status || 500, message);
+      (Object.keys(fieldErrors).length > 0
+        ? Object.values(fieldErrors)[0]
+        : `Xatolik yuz berdi (${response.status})`);
+    throw new ApiRequestError(response.status || 500, message, fieldErrors);
   }
   return data as T;
 }

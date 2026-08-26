@@ -117,14 +117,57 @@ export default function WizardPage() {
   const [images, setImages] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) router.push("/login?next=/elon-joylash");
   }, [user, router]);
 
-  const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
+  const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setDraft((d) => ({ ...d, [key]: value }));
+    setFieldErrors((fe) => {
+      if (key in fe) {
+        const next = { ...fe };
+        delete next[key];
+        return next;
+      }
+      return fe;
+    });
+  };
+
+  const liveError = (field: string): string | undefined => {
+    if (fieldErrors[field]) return fieldErrors[field];
+    if (field === "area") {
+      const v = Number(draft.area);
+      if (draft.area && (v < 10 || v > 1000))
+        return "Maydon 10–1000 m² diapazonda bo'lishi kerak";
+    }
+    if (field === "price") {
+      const v = Number(draft.price);
+      if (draft.price && (v <= 0 || v > 50000000))
+        return "Narx 1 – 50 000 000 so'm diapazonda bo'lishi kerak";
+    }
+    if (field === "title") {
+      if (draft.title.length > 0 && draft.title.trim().length < 10)
+        return "Sarlavha kamida 10 belgi bo'lishi kerak";
+    }
+    if (field === "description") {
+      if (draft.description.length > 0 && draft.description.trim().length < 20)
+        return "Tavsif kamida 20 belgi bo'lishi kerak";
+    }
+    if (field === "floor") {
+      const v = Number(draft.floor);
+      if (draft.floor && (v < 0 || v > 100))
+        return "Qavat 0–100 diapazonda bo'lishi kerak";
+    }
+    if (field === "total_floors") {
+      const v = Number(draft.total_floors);
+      if (draft.total_floors && (v < 1 || v > 100))
+        return "Qavatlar soni 1–100 diapazonda bo'lishi kerak";
+    }
+    return undefined;
+  };
 
   const mapCenter = useMemo<[number, number]>(
     () => DISTRICT_CENTERS[draft.district] ?? TASHKENT_CENTER,
@@ -146,6 +189,8 @@ export default function WizardPage() {
       case 3:
         if (!draft.area || Number(draft.area) <= 0)
           return "Maydonni kiriting";
+        if (Number(draft.area) < 10 || Number(draft.area) > 1000)
+          return "Maydon 10–1000 m² diapazonda bo'lishi kerak";
         return null;
       case 5:
         if (!draft.price || Number(draft.price) <= 0)
@@ -165,6 +210,7 @@ export default function WizardPage() {
       return;
     }
     setError(null);
+    setFieldErrors({});
     setStep((s) => Math.min(s + 1, 6));
   };
 
@@ -216,7 +262,16 @@ export default function WizardPage() {
       await api.post(`/listings/${created.id}/publish/`);
       router.push(`/profil`);
     } catch (e) {
-      setError(e instanceof ApiRequestError ? e.message : "Xatolik yuz berdi");
+      if (e instanceof ApiRequestError && Object.keys(e.fieldErrors).length > 0) {
+        setFieldErrors(e.fieldErrors);
+        setError(null);
+      } else {
+        setError(
+          e instanceof ApiRequestError
+            ? e.message
+            : "Ma'lumotlarni yuborishda xatolik yuz berdi. Iltimos, barcha maydonlarni tekshirib qayta urinib ko'ring."
+        );
+      }
     } finally {
       setSubmitting(false);
     }
@@ -359,6 +414,7 @@ export default function WizardPage() {
                 placeholder="Masalan: Chilonzorda 2 xonali yangi ta'mirlangan kvartira"
                 className={inputClass}
               />
+              <FieldErrorText msg={liveError("title")} />
             </div>
             <div>
               <label className={labelClass}>Batafsil tavsif</label>
@@ -369,6 +425,7 @@ export default function WizardPage() {
                 placeholder="Holati, transport, qo'shimcha shartlar..."
                 className={inputClass}
               />
+              <FieldErrorText msg={liveError("description")} />
             </div>
           </div>
         )}
@@ -385,8 +442,10 @@ export default function WizardPage() {
                   type="number"
                   value={draft.area}
                   onChange={(e) => set("area", e.target.value)}
+                  placeholder="10–1000"
                   className={inputClass}
                 />
+                <FieldErrorText msg={liveError("area")} />
               </div>
               <div>
                 <label className={labelClass}>Qavat</label>
@@ -396,6 +455,7 @@ export default function WizardPage() {
                   onChange={(e) => set("floor", e.target.value)}
                   className={inputClass}
                 />
+                <FieldErrorText msg={liveError("floor")} />
               </div>
               <div>
                 <label className={labelClass}>Qavatlar soni</label>
@@ -405,6 +465,7 @@ export default function WizardPage() {
                   onChange={(e) => set("total_floors", e.target.value)}
                   className={inputClass}
                 />
+                <FieldErrorText msg={liveError("total_floors")} />
               </div>
               <div>
                 <label className={labelClass}>Minimal muddat, oy</label>
@@ -487,9 +548,10 @@ export default function WizardPage() {
                 type="number"
                 value={draft.price}
                 onChange={(e) => set("price", e.target.value)}
-                placeholder="Masalan: 3500000"
+                placeholder="1 000 000 – 50 000 000"
                 className={inputClass}
               />
+              <FieldErrorText msg={liveError("price")} />
             </div>
             <div>
               <label className={labelClass}>Kafolat (depozit), so'm — ixtiyoriy</label>
@@ -588,4 +650,9 @@ function Row({ label, value }: { label: string; value: string }) {
       <dd className="font-medium text-right">{value || "—"}</dd>
     </div>
   );
+}
+
+function FieldErrorText({ msg }: { msg?: string }) {
+  if (!msg) return null;
+  return <p className="text-xs text-danger mt-1">{msg}</p>;
 }
