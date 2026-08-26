@@ -571,15 +571,8 @@ body {
 .maplibregl-marker-btn { outline: none !important; }
 .maplibregl-marker-btn:focus { outline: none !important; }
 
-/* Dark filter for OSM tiles */
-.map-dark-filter .maplibregl-canvas {
-  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.85) saturate(0.6);
-}
-
-.light .map-dark-filter .maplibregl-canvas {
-  filter: none;
-}
-
+/* Dark filter for OSM tiles — now handled natively via CartoDB dark/light tiles */
+.map-dark-filter .maplibregl-canvas { filter: none !important; }
 .map-dark-filter .maplibregl-control-container { filter: none !important; }
 
 /* User location dot */

@@ -16,31 +16,10 @@ import { MapPin, LocateFixed } from "lucide-react";
 
 import { api } from "@/lib/api";
 import { formatCompactPrice, formatPrice } from "@/lib/format";
+import { getMapStyle, detectTheme } from "@/lib/map-style";
 import type { MapMarker } from "@/lib/types";
 
 const TASHKENT: [number, number] = [69.2797, 41.3111];
-
-const OSM_STYLE: import("maplibre-gl").StyleSpecification = {
-  version: 8,
-  sources: {
-    osm: {
-      type: "raster",
-      tiles: [
-        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-      ],
-      tileSize: 256,
-      attribution: '&copy; OpenStreetMap',
-      maxzoom: 19,
-    },
-  },
-  layers: [
-    {
-      id: "osm-layer",
-      type: "raster",
-      source: "osm",
-    },
-  ],
-};
 
 function buildPin(price: number): HTMLElement {
   const el = document.createElement("button");
@@ -152,7 +131,7 @@ export default function MapClient() {
 
     const map = new MapLibreMap({
       container,
-      style: OSM_STYLE,
+      style: getMapStyle(detectTheme()),
       center: TASHKENT,
       zoom: 12,
       minZoom: 3,
@@ -232,7 +211,7 @@ export default function MapClient() {
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col md:flex-row overflow-hidden">
       <div className="flex-1 relative z-0 min-h-[50vh] md:min-h-0">
-        <div ref={containerRef} className="h-full w-full map-dark-filter" />
+        <div ref={containerRef} className="h-full w-full" />
 
         {!mapReady && (
           <div className="absolute inset-0 flex items-center justify-center z-[999] pointer-events-none">

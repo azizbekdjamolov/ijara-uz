@@ -8,20 +8,7 @@ import {
   type Marker as MapLibreMarkerType,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-
-const OSM_STYLE: import("maplibre-gl").StyleSpecification = {
-  version: 8,
-  sources: {
-    osm: {
-      type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "&copy; OpenStreetMap",
-      maxzoom: 19,
-    },
-  },
-  layers: [{ id: "osm-layer", type: "raster", source: "osm" }],
-};
+import { getMapStyle, detectTheme } from "@/lib/map-style";
 
 export default function LocationPicker({
   lat,
@@ -49,7 +36,7 @@ export default function LocationPicker({
 
     const map = new MapLibreMap({
       container,
-      style: OSM_STYLE,
+      style: getMapStyle(detectTheme()),
       center,
       zoom: 13,
       attributionControl: false,
@@ -100,7 +87,7 @@ export default function LocationPicker({
 
   return (
     <div className="relative rounded-xl overflow-hidden border border-[rgba(212,175,55,0.25)] h-64">
-      <div ref={containerRef} className="h-full w-full map-dark-filter cursor-crosshair" />
+      <div ref={containerRef} className="h-full w-full cursor-crosshair" />
       {!lat && (
         <div className="absolute inset-x-0 bottom-0 bg-[#12162a]/85 backdrop-blur px-3 py-2 text-xs text-muted pointer-events-none">
           Xaritaga bosib uy joylashuvini belgilang
