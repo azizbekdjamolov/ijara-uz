@@ -1,15 +1,17 @@
-"""Telegram Mini App login endpoint.
+"""Telegram Mini App login endpoint + webhook handler."""
 
-POST /api/v1/auth/telegram/webapp-login/
-Body: { "initData": "<Telegram WebApp initData string>" }
-
-Validates the signed initData, finds or creates the user, returns JWT tokens.
-"""
-
+import hashlib
+import hmac
+import json
 import logging
 
+from django.conf import settings
 from django.db import transaction
-from django.db.models import Q
+from django.http import HttpResponse, HttpResponseForbidden
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,6 +23,94 @@ from apps.core.throttles import AuthAnonRateThrottle
 from apps.telegram_bot.webapp import validate_webapp_init_data
 
 logger = logging.getLogger("apps.telegram_bot")
+
+
+# ─── Webhook handler ──────────────────────────────────────────────────────
+
+BOT_COMMANDS = {
+    "/start": (
+        "Salom! 👋 Ijara.uz botiga xush kelibsiz!\n\n"
+        "Men sizga uy-joy ijarasi bo'yicha yordam beraman:\n\n"
+        "🏠 E'lonlarni ko'rish\n"
+        "🔍 Qidiruv\n"
+        "📱 Ijara.uz dan foydalanish\n\n"
+        "Saytga o'tish: https://ijara-frontend.onrender.com"
+    ),
+    "/help": (
+        "Ijara.uz Bot Yordam 📋\n\n"
+        "Bu bot orqali siz:\n"
+        "• Yangi e'lonlardan xabardor bo'lasiz\n"
+        "• Sevimli e'lonlarni kuzatasiz\n"
+        "• Ijara.uz saytiga o'tasiz\n\n"
+        "Savollaringiz bo'lsa, support@ijara.uz ga yozing."
+    ),
+}
+
+
+def _bot_token() -> str:
+    return getattr(settings, "TELEGRAM_BOT_TOKEN", "") or ""
+
+
+def _verify_webhook(request_body: bytes) -> bool:
+    """Optional: verify secret_token if WEBHOOK_SECRET is set."""
+    secret = getattr(settings, "TELEGRAM_WEBHOOK_SECRET", "")
+    if not secret:
+        return True
+    token = request.headers.get("X-Telegram-Bot-Api-Secret-Token", "")
+    return hmac.compare_digest(token, secret)
+
+
+def _handle_message(message: dict) -> None:
+    """Process a single incoming Telegram message."""
+    chat_id = message["chat"]["id"]
+    text = (message.get("text") or "").strip()
+    first_name = message.get("from", {}).get("first_name", "")
+
+    logger.info("[webhook] message from chat=%s text=%s", chat_id, text)
+
+    from apps.telegram_bot.services import send_message
+
+    if text in BOT_COMMANDS:
+        reply = BOT_COMMANDS[text]
+        if first_name:
+            reply = f"{first_name}, salom!\n\n" + reply
+        send_message(chat_id, reply)
+    elif text.startswith("/"):
+        send_message(
+            chat_id,
+            "Noma'lum buyruq. /help yoki /start ni sinab ko'ring.",
+        )
+    else:
+        send_message(
+            chat_id,
+            "Men faqat buyruqlarni tushunaman. /start yoki /help ni bosing.",
+        )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class TelegramWebhookView(View):
+    """Receive updates from Telegram via webhook."""
+
+    def post(self, request):
+        if not _verify_webhook(request.body):
+            return HttpResponseForbidden("Invalid token")
+
+        try:
+            update = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return HttpResponse("bad json", status=400)
+
+        message = update.get("message")
+        if message:
+            try:
+                _handle_message(message)
+            except Exception as exc:
+                logger.exception("[webhook] xabarni qayta ishlashda xatolik: %s", exc)
+
+        return HttpResponse("ok")
+
+
+# ─── Mini App login ────────────────────────────────────────────────────────
 
 
 class WebAppLoginView(APIView):

@@ -94,7 +94,7 @@ function flattenDrfErrors(data: unknown): Record<string, string> {
   return result;
 }
 
-const NETWORK_ERRORS_MAX_RETRIES = 3;
+const DEFAULT_MAX_RETRIES = 3;
 const BASE_TIMEOUT_MS = 20000;
 const RETRY_DELAYS_MS = [5000, 10000, 20000];
 
@@ -106,7 +106,8 @@ async function request<T>(
   path: string,
   options: RequestInit = {},
   retry = true,
-  timeoutMs = BASE_TIMEOUT_MS
+  timeoutMs = BASE_TIMEOUT_MS,
+  maxRetries = DEFAULT_MAX_RETRIES
 ): Promise<T> {
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> | undefined),
@@ -119,7 +120,7 @@ async function request<T>(
 
   let lastNetworkErr: Error | null = null;
 
-  for (let attempt = 0; attempt <= NETWORK_ERRORS_MAX_RETRIES; attempt++) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     let response: Response;
     try {
       const controller = new AbortController();
@@ -129,7 +130,7 @@ async function request<T>(
       lastNetworkErr = null;
     } catch (err) {
       lastNetworkErr = err as Error;
-      if (attempt < NETWORK_ERRORS_MAX_RETRIES) {
+      if (attempt < maxRetries) {
         await sleep(RETRY_DELAYS_MS[attempt]);
         continue;
       }
@@ -183,13 +184,14 @@ async function request<T>(
 }
 
 export const api = {
-  get: <T>(path: string, options?: RequestInit) => request<T>(path, options),
-  post: <T>(path: string, body?: unknown, options?: RequestInit, timeoutMs?: number) =>
-    request<T>(path, { ...options, method: "POST", body: JSON.stringify(body) }, true, timeoutMs),
-  patch: <T>(path: string, body?: unknown, options?: RequestInit) =>
-    request<T>(path, { ...options, method: "PATCH", body: JSON.stringify(body) }),
-  del: <T>(path: string, options?: RequestInit) =>
-    request<T>(path, { ...options, method: "DELETE" }),
-  upload: <T>(path: string, formData: FormData, options?: RequestInit) =>
-    request<T>(path, { ...options, method: "POST", body: formData }),
+  get: <T>(path: string, options?: RequestInit, maxRetries?: number) =>
+    request<T>(path, options, true, BASE_TIMEOUT_MS, maxRetries),
+  post: <T>(path: string, body?: unknown, options?: RequestInit, timeoutMs?: number, maxRetries?: number) =>
+    request<T>(path, { ...options, method: "POST", body: JSON.stringify(body) }, true, timeoutMs, maxRetries),
+  patch: <T>(path: string, body?: unknown, options?: RequestInit, maxRetries?: number) =>
+    request<T>(path, { ...options, method: "PATCH", body: JSON.stringify(body) }, true, BASE_TIMEOUT_MS, maxRetries),
+  del: <T>(path: string, options?: RequestInit, maxRetries?: number) =>
+    request<T>(path, { ...options, method: "DELETE" }, true, BASE_TIMEOUT_MS, maxRetries),
+  upload: <T>(path: string, formData: FormData, options?: RequestInit, maxRetries?: number) =>
+    request<T>(path, { ...options, method: "POST", body: formData }, true, BASE_TIMEOUT_MS, maxRetries),
 };

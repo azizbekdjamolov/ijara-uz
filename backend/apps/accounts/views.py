@@ -170,26 +170,33 @@ class TelegramLoginView(APIView):
     throttle_classes = [AuthAnonRateThrottle]
 
     def post(self, request):
+        import time as _time
+        t0 = _time.monotonic()
+        logger.info("[telegram-login] so'rov kelendi ip=%s", request.META.get("REMOTE_ADDR"))
         try:
             trusted = validate_telegram_data(request.data)
             user = get_or_create_telegram_user(**trusted)
         except TelegramAuthError as exc:
+            logger.warning("[telegram-login] auth xatolik: %s (%.2fs)", exc, _time.monotonic() - t0)
             return Response(
                 {"message": str(exc)}, status=status.HTTP_401_UNAUTHORIZED
             )
         except serializers.ValidationError as exc:
+            logger.warning("[telegram-login] validation xatolik: %s (%.2fs)", exc.detail, _time.monotonic() - t0)
             return Response(
                 {"message": "Telegram ma'lumotlari noto'g'ri.", "details": exc.detail},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         if user.is_banned:
+            logger.warning("[telegram-login] user banned: %s (%.2fs)", user.id, _time.monotonic() - t0)
             return Response(
                 {"message": UZ_ERROR_MESSAGES["banned"]},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
         refresh = RefreshToken.for_user(user)
+        logger.info("[telegram-login] muvaffaqiyatli: user=%s (%.2fs)", user.id, _time.monotonic() - t0)
         return Response(
             {
                 "access": str(refresh.access_token),

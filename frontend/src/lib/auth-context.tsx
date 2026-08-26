@@ -94,7 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         "/auth/telegram/",
         data,
         undefined,
-        45000
+        45000,
+        1
       );
       setTokens(payload.access, payload.refresh);
       setUser(payload.user);
@@ -109,7 +110,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         "/auth/telegram/webapp-login/",
         { initData },
         undefined,
-        45000
+        45000,
+        1
       );
       setTokens(payload.access, payload.refresh);
       setUser(payload.user);
