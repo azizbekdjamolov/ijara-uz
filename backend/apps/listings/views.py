@@ -95,14 +95,25 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class PublicListingView(generics.RetrieveAPIView):
-    """Public SEO-friendly detail for any published listing."""
+    """Public SEO-friendly detail for any published listing.
+
+    Owners can always view their own listings regardless of status.
+    """
 
     permission_classes = [permissions.AllowAny]
-    queryset = Listing.objects.select_related(
-        "prop", "owner", "owner__profile", "risk"
-    ).filter(status=ListingStatus.PUBLISHED)
     lookup_field = "slug"
     serializer_class = ListingDetailSerializer
+
+    def get_queryset(self):
+        qs = Listing.objects.select_related(
+            "prop", "owner", "owner__profile", "risk"
+        )
+        if self.request.user.is_authenticated:
+            from django.db.models import Q
+            return qs.filter(
+                Q(status=ListingStatus.PUBLISHED) | Q(owner=self.request.user)
+            )
+        return qs.filter(status=ListingStatus.PUBLISHED)
 
 
 class MyListingListView(generics.ListAPIView):

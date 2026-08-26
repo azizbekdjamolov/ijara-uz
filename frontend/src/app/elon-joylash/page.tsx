@@ -150,6 +150,8 @@ export default function WizardPage() {
       case 5:
         if (!draft.price || Number(draft.price) <= 0)
           return "Oylik narxni kiriting";
+        if (Number(draft.price) > 50000000)
+          return "Narx 50 000 000 so'mdan oshmasligi kerak";
         return null;
       default:
         return null;
@@ -215,6 +217,7 @@ export default function WizardPage() {
       router.push(`/profil`);
     } catch (e) {
       setError(e instanceof ApiRequestError ? e.message : "Xatolik yuz berdi");
+    } finally {
       setSubmitting(false);
     }
   };
