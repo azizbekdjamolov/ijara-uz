@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, MapPin } from "lucide-react";
@@ -11,24 +12,39 @@ import type { ListingSummary } from "@/lib/types";
 export default function ListingCard({ listing }: { listing: ListingSummary }) {
   const { t } = useTranslation();
   const image = listing.primary_image?.thumb ?? listing.primary_image?.image;
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+
   return (
     <Link
       href={`/elon/${listing.slug}`}
       className="group card card-press overflow-hidden block animate-fade-in-up"
     >
       <div className="relative aspect-[4/3] bg-[rgba(255,255,255,0.05)] overflow-hidden">
-        {image ? (
-          <Image
-            src={image}
-            alt={listing.title}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.07]"
-            unoptimized
-          />
+        {image && !errored ? (
+          <>
+            {!loaded && <div className="absolute inset-0 skeleton" />}
+            <Image
+              src={image}
+              alt={listing.title}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className={`object-cover transition-transform duration-700 group-hover:scale-[1.07] ${loaded ? "opacity-100" : "opacity-0"}`}
+              unoptimized
+              onLoad={() => setLoaded(true)}
+              onError={() => setErrored(true)}
+            />
+          </>
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-muted text-sm">
-            {t("listingCard.noImage")}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-30">
+              <rect x="6" y="20" width="36" height="22" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <path d="M4 22L24 8L44 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <rect x="18" y="28" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <rect x="11" y="26" width="6" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" fill="none" />
+              <rect x="31" y="26" width="6" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" fill="none" />
+            </svg>
+            <span className="text-xs">{t("listingCard.noImage")}</span>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#07090f]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

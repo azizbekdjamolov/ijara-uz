@@ -103,7 +103,7 @@ export default function HomePageClient({ newListings, popular, stats }: Props) {
         </section>
       )}
 
-      <section className="max-w-7xl mx-auto px-4 mt-14 pb-10">
+      <section className="max-w-7xl mx-auto px-4 mt-14 pb-2">
         <div className="flex items-center justify-between mb-5">
           <h2 className="display text-2xl font-bold flex items-center gap-2.5">
             <Search size={22} className="text-gold" />
