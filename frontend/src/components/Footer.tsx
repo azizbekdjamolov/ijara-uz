@@ -1,10 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { LogOut, User } from "lucide-react";
+
+import { useAuth } from "@/lib/auth-context";
 
 export default function Footer() {
   const { t } = useTranslation();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <footer className="mt-12 safe-bottom pb-20 md:pb-8 border-t backdrop-blur-xl transition-colors"
@@ -46,16 +57,35 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-3 text-foreground">{t("footer.userSection")}</h3>
           <ul className="space-y-2 text-muted">
-            <li>
-              <Link href="/login" className="hover:text-gold transition-colors">
-                {t("nav.login")}
-              </Link>
-            </li>
-            <li>
-              <Link href="/register" className="hover:text-gold transition-colors">
-                {t("nav.register")}
-              </Link>
-            </li>
+            {user ? (
+              <>
+                <li>
+                  <Link href="/profil" className="hover:text-gold transition-colors flex items-center gap-1.5">
+                    <User size={14} />
+                    {t("nav.profile")}
+                  </Link>
+                </li>
+                <li>
+                  <button onClick={handleLogout} className="hover:text-gold transition-colors flex items-center gap-1.5">
+                    <LogOut size={14} />
+                    {t("nav.logout")}
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link href="/login" className="hover:text-gold transition-colors">
+                    {t("nav.login")}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/register" className="hover:text-gold transition-colors">
+                    {t("nav.register")}
+                  </Link>
+                </li>
+              </>
+            )}
             <li>
               <Link href="/saqlanganlar" className="hover:text-gold transition-colors">
                 {t("nav.favorites")}
