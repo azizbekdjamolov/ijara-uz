@@ -44,7 +44,7 @@ export default function SetPasswordPage() {
     try {
       await api.post("/auth/set-password/", { password });
       setSuccess(true);
-      setTimeout(() => router.push("/profil"), 2000);
+      setTimeout(() => router.push("/"), 2000);
     } catch (err) {
       setError(
         err instanceof ApiRequestError ? err.message : t("common.error")
@@ -147,7 +147,7 @@ export default function SetPasswordPage() {
           </form>
 
           <div className="mt-5 text-center text-sm text-muted">
-            <Link href="/profil" className="text-gold font-semibold hover:text-gold-light transition-colors">
+            <Link href="/" className="text-gold font-semibold hover:text-gold-light transition-colors">
               {t("setPassword.skip")}
             </Link>
           </div>

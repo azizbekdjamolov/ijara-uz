@@ -49,7 +49,7 @@ function LoginForm() {
     setSubmitting(true);
     try {
       await login(identifier.trim(), password);
-      router.push(searchParams.get("next") ?? "/profil");
+      router.push(searchParams.get("next") ?? "/");
     } catch {
       setError(t("login.invalidCredentials"));
       setSubmitting(false);

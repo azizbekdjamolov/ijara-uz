@@ -87,7 +87,7 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await registerComplete(phone, password);
-      router.push("/profil");
+      router.push("/");
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : t("common.error"));
       setSubmitting(false);

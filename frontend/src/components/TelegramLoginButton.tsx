@@ -35,7 +35,7 @@ export default function TelegramLoginButton() {
       if (loggedInUser.has_password === false) {
         router.push("/parol-ornatish");
       } else {
-        router.push("/profil");
+        router.push("/");
       }
       router.refresh();
     } catch (e) {
