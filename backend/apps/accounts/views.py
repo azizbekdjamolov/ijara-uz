@@ -460,9 +460,14 @@ class SetPasswordView(APIView):
 
         user = request.user
         password = serializer.validated_data["password"]
+        full_name = serializer.validated_data.get("full_name", "")
 
         user.set_password(password)
         user.save(update_fields=["password"])
+
+        if full_name:
+            user.profile.full_name = full_name
+            user.profile.save(update_fields=["full_name", "updated_at"])
 
         from apps.accounts.services.user_service import UserService
         with contextlib.suppress(Exception):

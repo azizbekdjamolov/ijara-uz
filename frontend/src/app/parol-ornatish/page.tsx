@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Lock, ShieldCheck, User } from "lucide-react";
 
 import { api, ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -16,10 +16,17 @@ export default function SetPasswordPage() {
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      setFullName(user.full_name || "");
+    }
+  }, [loading, user]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -42,7 +49,10 @@ export default function SetPasswordPage() {
 
     setSubmitting(true);
     try {
-      await api.post("/auth/set-password/", { password });
+      await api.post("/auth/set-password/", {
+        password,
+        full_name: fullName.trim() || undefined,
+      });
       setSuccess(true);
       setTimeout(() => router.push("/"), 2000);
     } catch (err) {
@@ -99,6 +109,17 @@ export default function SetPasswordPage() {
           )}
 
           <form onSubmit={submit} className="space-y-4">
+            <div className={inputWrap}>
+              <User size={16} className={iconClass} />
+              <input
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder={t("register.fullNamePlaceholder")}
+                autoComplete="name"
+                className="input pl-10"
+              />
+            </div>
+
             <div className={inputWrap}>
               <Lock size={16} className={iconClass} />
               <input

@@ -208,7 +208,11 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
 class SetPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, min_length=8)
+    full_name = serializers.CharField(required=False, allow_blank=True, default="")
 
     def validate_password(self, value: str) -> str:
         validate_password(value)
         return value
+
+    def validate_full_name(self, value: str) -> str:
+        return value.strip()
