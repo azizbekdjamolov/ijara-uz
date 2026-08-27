@@ -58,9 +58,13 @@ class ConversationSerializer(serializers.ModelSerializer):
     def get_other_user(self, obj):
         user = self.context["request"].user
         other = obj.owner if user.id == obj.tenant_id else obj.tenant
+        try:
+            full_name = other.profile.full_name or other.phone or other.telegram_username or ""
+        except Exception:
+            full_name = ""
         return {
             "id": str(other.id),
-            "full_name": other.profile.full_name or other.phone,
+            "full_name": full_name,
             "is_phone_verified": other.is_phone_verified,
             "is_profile_verified": other.is_profile_verified,
         }

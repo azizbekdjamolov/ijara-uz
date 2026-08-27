@@ -91,9 +91,15 @@ def get_or_create_telegram_user(*, telegram_id: int, telegram_username: str = ""
         if telegram_photo_url and user.telegram_photo_url != telegram_photo_url:
             user.telegram_photo_url = telegram_photo_url
             changed = True
-        if full_name and not user.profile.full_name:
-            user.profile.full_name = full_name
-            user.profile.save(update_fields=["full_name", "updated_at"])
+        if full_name:
+            try:
+                if not user.profile.full_name:
+                    user.profile.full_name = full_name
+                    user.profile.save(update_fields=["full_name", "updated_at"])
+            except Exception:
+                from apps.accounts.models import Profile
+
+                Profile.objects.get_or_create(user=user, defaults={"full_name": full_name})
         if changed:
             user.save(update_fields=["telegram_username", "telegram_photo_url"])
         return user

@@ -46,10 +46,15 @@ class ChatService:
             recipient = conversation.tenant
         from apps.notifications.services.notification_service import NotificationService
 
+        try:
+            sender_name = str(sender.profile.full_name or sender.phone or sender.telegram_username)
+        except Exception:
+            sender_name = str(sender.telegram_username or sender.phone or "")
+
         NotificationService.new_message(
             user=recipient,
             conversation=conversation,
-            sender_name=str(sender.profile.full_name or sender.phone),
+            sender_name=sender_name,
             text=text,
         )
         return message
