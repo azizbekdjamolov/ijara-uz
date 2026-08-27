@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Trash2 } from "lucide-react";
 
 import { api, ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -101,6 +101,16 @@ export default function MessagesPage() {
     }
   };
 
+  const deleteMessage = async (id: string) => {
+    if (!activeId) return;
+    try {
+      await api.del(`/chat/conversations/${activeId}/messages/${id}/`);
+      setMessages((prev) => prev.filter((m) => m.id !== id));
+    } catch (e) {
+      setError(e instanceof ApiRequestError ? e.message : t("common.error"));
+    }
+  };
+
   if (loading || (user && loadingList)) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-12 text-center text-muted">
@@ -177,7 +187,7 @@ export default function MessagesPage() {
                    return (
                      <div
                        key={m.id}
-                       className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm animate-fade-in ${
+                       className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm animate-fade-in group relative ${
                          mine
                            ? "bg-[rgba(212,175,55,0.15)] text-foreground self-end ml-auto rounded-br-sm"
                            : "bg-[var(--surface-strong)] text-foreground self-start rounded-bl-sm"
@@ -190,6 +200,16 @@ export default function MessagesPage() {
                        <div className="text-[10px] mt-1 text-muted">
                          {formatRelative(m.created_at)}
                        </div>
+                       {mine && (
+                         <button
+                           onClick={() => deleteMessage(m.id)}
+                           title={t("chat.deleteMessage")}
+                           className="absolute -left-7 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-muted hover:text-danger transition-opacity"
+                           aria-label={t("chat.deleteMessage")}
+                         >
+                           <Trash2 size={14} />
+                         </button>
+                       )}
                      </div>
                    );
                  })}

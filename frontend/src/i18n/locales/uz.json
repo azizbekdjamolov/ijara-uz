@@ -214,6 +214,7 @@
     "typeMessage": "Xabar yozing...",
     "reserve": "Band qilish",
     "reserveSent": "Band qilish so'rovi yuborildi. Tasdiqlashni kuting.",
+    "deleteMessage": "O'chirish",
     "reservationFromOwner": "Sizga uy band qilish taklif qilindi",
     "approve": "Roziman",
     "decline": "Rad etish",

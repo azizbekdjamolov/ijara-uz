@@ -214,6 +214,7 @@
     "typeMessage": "Type a message...",
     "reserve": "Reserve",
     "reserveSent": "Reservation request sent. Waiting for confirmation.",
+    "deleteMessage": "Delete",
     "reservationFromOwner": "You are offered to reserve this home",
     "approve": "I agree",
     "decline": "Decline",

@@ -4,7 +4,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.chat.models import Conversation
+from apps.chat.models import Conversation, Message
 from apps.chat.serializers import (
     ConversationSerializer,
     MessageCreateSerializer,
@@ -86,6 +86,24 @@ class MessageCreateView(APIView):
         except ChatServiceError as exc:
             return Response({"message": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(MessageSerializer(message).data, status=status.HTTP_201_CREATED)
+
+
+class MessageDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsConversationParticipant]
+
+    def delete(self, request, pk, message_pk):
+        conversation = get_object_or_404(Conversation, pk=pk)
+        self.check_object_permissions(request, conversation)
+        message = get_object_or_404(
+            Message, pk=message_pk, conversation=conversation
+        )
+        if message.sender_id != request.user.id:
+            return Response(
+                {"message": "Faqat o'z xabaringizni o'chira olasiz."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        message.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UnreadCountView(APIView):

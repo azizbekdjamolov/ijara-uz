@@ -570,21 +570,41 @@ function ChatDetail({ conversationId, onBack }: { conversationId: string; onBack
     } catch { setText(body); }
   };
 
+  const deleteMessage = async (id: string) => {
+    try {
+      await api.del(`/chat/conversations/${conversationId}/messages/${id}/`);
+      setMessages((prev) => prev.filter((m) => m.id !== id));
+    } catch { /* ignore */ }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-3.5rem)]">
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2" ref={(el) => el?.scrollTo(0, el.scrollHeight)}>
         {loading ? (
           <div className="text-center py-12 text-muted text-sm">{t("common.loading", "Yuklanmoqda...")}</div>
-        ) : messages.map((m) => (
-          <div key={m.id} className={`max-w-[80%] ${m.sender_id === user?.id ? "ml-auto" : ""}`}>
-            <div className={`px-3 py-2 rounded-2xl text-xs leading-relaxed ${m.sender_id === user?.id ? "bg-gold/20 text-foreground rounded-br-sm" : "bg-white/5 text-foreground/80 rounded-bl-sm"}`}>
+        ) : messages.map((m) => {
+          const mine = m.sender_id === user?.id;
+          return (
+          <div key={m.id} className={`max-w-[80%] ${mine ? "ml-auto" : ""}`}>
+            <div className={`px-3 py-2 rounded-2xl text-xs leading-relaxed ${mine ? "bg-gold/20 text-foreground rounded-br-sm" : "bg-white/5 text-foreground/80 rounded-bl-sm"}`}>
               {m.text}
             </div>
-            <div className={`text-[9px] text-muted mt-0.5 ${m.sender_id === user?.id ? "text-right" : ""}`}>
+            <div className={`text-[9px] text-muted mt-0.5 flex items-center gap-1 ${mine ? "justify-end" : ""}`}>
               {formatRelative(m.created_at)}
+              {mine && (
+                <button
+                  onClick={() => deleteMessage(m.id)}
+                  title={t("chat.deleteMessage")}
+                  className="opacity-60 hover:opacity-100 hover:text-red-400 transition-opacity"
+                  aria-label={t("chat.deleteMessage")}
+                >
+                  <Trash2 size={11} />
+                </button>
+              )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
       {conv && (
         <ReservationPanel conversationId={conversationId} ownerId={conv.listing.owner_id} />
