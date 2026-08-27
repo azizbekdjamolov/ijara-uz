@@ -80,6 +80,59 @@ class NotificationService:
         )
 
     @classmethod
+    def reservation_request(cls, *, reservation) -> Notification:
+        listing = reservation.listing
+        try:
+            owner_name = str(listing.owner.profile.full_name or listing.owner.phone or "")
+        except Exception:
+            owner_name = ""
+        return cls.create(
+            user=reservation.candidate,
+            type_=NotificationType.RESERVATION_REQUEST,
+            title="Uy band qilish so'rovi",
+            body=f"{owner_name}: \"{listing.title}\" uyni sizga band qilmoqchi. Rozimisiz?",
+            data={
+                "reservation_id": str(reservation.id),
+                "listing_id": str(listing.id),
+                "conversation_id": str(reservation.conversation_id),
+                "action": "reservation_request",
+            },
+        )
+
+    @classmethod
+    def reservation_confirmed(cls, *, reservation) -> Notification:
+        listing = reservation.listing
+        return cls.create(
+            user=reservation.initiator,
+            type_=NotificationType.RESERVATION_CONFIRMED,
+            title="Uy band qilindi",
+            body=f"\"{listing.title}\" uy endi band deb belgilandi.",
+            data={"listing_id": str(listing.id), "reservation_id": str(reservation.id)},
+        )
+
+    @classmethod
+    def reservation_declined(cls, *, reservation) -> Notification:
+        listing = reservation.listing
+        return cls.create(
+            user=reservation.initiator,
+            type_=NotificationType.RESERVATION_DECLINED,
+            title="Band qilish rad etildi",
+            body=f"\"{listing.title}\" uchun band qilish so'rovi rad etildi.",
+            data={"listing_id": str(listing.id), "reservation_id": str(reservation.id)},
+        )
+
+    @classmethod
+    def reservation_superseded(cls, *, reservation) -> Notification:
+        listing = reservation.listing
+        return cls.create(
+            user=reservation.candidate,
+            type_=NotificationType.RESERVATION_SUPERSEDED,
+            title="Band qilish bekor qilindi",
+            body=f"\"{listing.title}\" uy boshqa kishi tomonidan band qilindi.",
+            data={"listing_id": str(listing.id), "reservation_id": str(reservation.id)},
+        )
+
+    @classmethod
     def mark_all_read(cls, user) -> int:
         return Notification.objects.filter(user=user, is_read=False).update(
             is_read=True, read_at=timezone.now()

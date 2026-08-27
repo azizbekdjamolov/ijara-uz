@@ -67,6 +67,8 @@ export const STATUS_KEYS: Record<string, string> = {
   paused: "format.status.paused",
   rejected: "format.status.rejected",
   expired: "format.status.expired",
+  reserved: "format.status.reserved",
+  rented: "format.status.rented",
   deleted: "format.status.deleted",
 };
 

@@ -208,6 +208,19 @@
     "empty": "No messages yet",
     "typeMessage": "Type a message..."
   },
+  "chat": {
+    "title": "Messages",
+    "empty": "No messages yet",
+    "typeMessage": "Type a message...",
+    "reserve": "Reserve",
+    "reserveSent": "Reservation request sent. Waiting for confirmation.",
+    "reservationFromOwner": "You are offered to reserve this home",
+    "approve": "I agree",
+    "decline": "Decline",
+    "reserved": "Home reserved",
+    "cancelled": "Cancelled",
+    "declined": "Declined"
+  },
   "favorites": {
     "title": "Favorites",
     "empty": "No favorite listings yet"
@@ -331,6 +344,8 @@
       "paused": "Paused",
       "rejected": "Rejected",
       "expired": "Expired",
+      "reserved": "Reserved",
+      "rented": "Rented",
       "deleted": "Deleted"
     }
   },

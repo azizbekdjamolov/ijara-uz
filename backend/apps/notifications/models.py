@@ -14,6 +14,10 @@ class NotificationType(models.TextChoices):
     REPORT_UPDATE = "report_update", "Shikoyat holati"
     VERIFICATION_RESULT = "verification_result", "Tasdiqlash natijasi"
     ADMIN_ASSIGNMENT = "admin_assignment", "Admin tayinlangan"
+    RESERVATION_REQUEST = "reservation_request", "Band qilish so'rovi"
+    RESERVATION_CONFIRMED = "reservation_confirmed", "Band qilish tasdiqlandi"
+    RESERVATION_DECLINED = "reservation_declined", "Band qilish rad etildi"
+    RESERVATION_SUPERSEDED = "reservation_superseded", "Boshqa kishi band qildi"
     SYSTEM = "system", "Tizim xabari"
 
 

@@ -208,6 +208,19 @@
     "empty": "Hozircha xabarlaringiz yo'q",
     "typeMessage": "Xabar yozing..."
   },
+  "chat": {
+    "title": "Xabarlar",
+    "empty": "Hozircha xabarlaringiz yo'q",
+    "typeMessage": "Xabar yozing...",
+    "reserve": "Band qilish",
+    "reserveSent": "Band qilish so'rovi yuborildi. Tasdiqlashni kuting.",
+    "reservationFromOwner": "Sizga uy band qilish taklif qilindi",
+    "approve": "Roziman",
+    "decline": "Rad etish",
+    "reserved": "Uy band qilindi",
+    "cancelled": "Bekor qilindi",
+    "declined": "Rad etildi"
+  },
   "favorites": {
     "title": "Saqlanganlar",
     "empty": "Hozircha saqlangan e'lonlaringiz yo'q"
@@ -331,6 +344,8 @@
       "paused": "To'xtatilgan",
       "rejected": "Rad etilgan",
       "expired": "Muddati tugagan",
+      "reserved": "Band",
+      "rented": "Ijaraga berilgan",
       "deleted": "O'chirilgan"
     }
   },

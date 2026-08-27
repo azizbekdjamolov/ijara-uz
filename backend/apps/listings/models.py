@@ -92,6 +92,7 @@ class ListingStatus(models.TextChoices):
     PAUSED = "paused", "To'xtatilgan"
     REJECTED = "rejected", "Rad etilgan"
     EXPIRED = "expired", "Muddati o'tgan"
+    RESERVED = "reserved", "Band qilingan"
     RENTED = "rented", "Ijaraga berilgan"
     DELETED = "deleted", "O'chirilgan"
 

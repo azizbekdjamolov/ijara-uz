@@ -72,6 +72,7 @@ class ListingService:
         },
         ListingStatus.PUBLISHED: {
             ListingStatus.PAUSED,
+            ListingStatus.RESERVED,
             ListingStatus.RENTED,
             ListingStatus.EXPIRED,
             ListingStatus.DELETED,
@@ -87,6 +88,11 @@ class ListingService:
         },
         ListingStatus.EXPIRED: {
             ListingStatus.PUBLISHED,
+            ListingStatus.DELETED,
+        },
+        ListingStatus.RESERVED: {
+            ListingStatus.PUBLISHED,
+            ListingStatus.RENTED,
             ListingStatus.DELETED,
         },
         ListingStatus.RENTED: {

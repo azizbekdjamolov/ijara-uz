@@ -11,6 +11,8 @@ export type ListingStatus =
   | "paused"
   | "rejected"
   | "expired"
+  | "reserved"
+  | "rented"
   | "deleted";
 
 export interface ListingImage {
@@ -126,6 +128,22 @@ export interface ConversationListing {
   slug: string;
   title: string;
   price: number;
+  status: string;
+  owner_id: string;
+}
+
+export interface Reservation {
+  id: string;
+  listing_id: string;
+  listing_title: string;
+  listing_slug: string;
+  conversation_id: string;
+  initiator_id: string;
+  candidate_id: string;
+  status: "pending" | "confirmed" | "declined" | "cancelled";
+  note: string;
+  created_at: string;
+  responded_at: string | null;
 }
 
 export interface ConversationLastMessage {

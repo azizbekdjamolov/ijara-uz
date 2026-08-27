@@ -109,6 +109,8 @@ export default function ProfilePage() {
     rejected: "bg-[rgba(255,107,94,0.15)] text-danger",
     paused: "bg-[rgba(118,118,128,0.12)] text-muted",
     expired: "bg-[rgba(118,118,128,0.12)] text-muted",
+    reserved: "bg-[rgba(251,191,36,0.18)] text-[#b45309]",
+    rented: "bg-[rgba(59,130,246,0.15)] text-[#2563eb]",
   };
 
   const initials = (user.full_name || "F").charAt(0).toUpperCase();

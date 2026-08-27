@@ -53,6 +53,8 @@ class ConversationSerializer(serializers.ModelSerializer):
             "slug": listing.slug,
             "title": listing.title,
             "price": listing.price,
+            "status": listing.status,
+            "owner_id": str(listing.owner_id),
         }
 
     def get_other_user(self, obj):

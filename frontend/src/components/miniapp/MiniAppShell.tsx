@@ -31,7 +31,9 @@ import {
   formatCompactPrice,
   formatRelative,
   getPropertyTypeLabel,
+  getStatusLabel,
 } from "@/lib/format";
+import { ReservationPanel } from "@/components/ReservationPanel";
 import type {
   ListingSummary,
   ListingDetail,
@@ -538,6 +540,7 @@ function ChatDetail({ conversationId, onBack }: { conversationId: string; onBack
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [conv, setConv] = useState<Conversation | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -551,6 +554,11 @@ function ChatDetail({ conversationId, onBack }: { conversationId: string; onBack
     const id = setInterval(load, 5000);
     return () => clearInterval(id);
   }, [load]);
+  useEffect(() => {
+    api.get<Conversation>(`/chat/conversations/${conversationId}/`)
+      .then(setConv)
+      .catch(() => {});
+  }, [conversationId]);
 
   const send = async () => {
     if (!text.trim()) return;
@@ -578,6 +586,9 @@ function ChatDetail({ conversationId, onBack }: { conversationId: string; onBack
           </div>
         ))}
       </div>
+      {conv && (
+        <ReservationPanel conversationId={conversationId} ownerId={conv.listing.owner_id} />
+      )}
       <div className="px-3 py-2 border-t flex gap-2" style={{ borderColor: "var(--border)" }}>
         <input value={text} onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") send(); }}
@@ -684,8 +695,8 @@ function ProfileTab({ onLogout }: { onLogout: () => void }) {
             {myListings.map((l) => (
               <div key={l.id} className="flex items-center gap-2 p-2 rounded-xl bg-white/3 text-xs">
                 <div className="flex-1 truncate">{l.title}</div>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${l.status === "published" ? "bg-green-500/15 text-green-400" : "bg-yellow-500/15 text-yellow-400"}`}>
-                  {l.status}
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${l.status === "published" ? "bg-green-500/15 text-green-400" : l.status === "reserved" ? "bg-yellow-500/20 text-yellow-300" : l.status === "rented" ? "bg-blue-500/15 text-blue-300" : "bg-yellow-500/15 text-yellow-400"}`}>
+                  {getStatusLabel(l.status)}
                 </span>
               </div>
             ))}

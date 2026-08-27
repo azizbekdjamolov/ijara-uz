@@ -8,6 +8,7 @@ import { ArrowLeft, Send } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { formatCompactPrice, formatRelative } from "@/lib/format";
+import { ReservationPanel } from "@/components/ReservationPanel";
 import type { Conversation, Message } from "@/lib/types";
 
 const POLL_INTERVAL = 5000;
@@ -110,6 +111,8 @@ export default function MessagesPage() {
 
   if (!user) return null;
 
+  const activeConv = conversations.find((c) => c.id === activeId) ?? null;
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-8">
       <h1 className="text-2xl font-bold mb-4">{t("messages.title")}</h1>
@@ -168,33 +171,36 @@ export default function MessagesPage() {
         <div className="card flex flex-col overflow-hidden">
           {activeId ? (
             <>
-              <div className="flex-1 overflow-y-auto p-4 space-y-3" ref={scrollRef}>
-                {messages.map((m) => {
-                  const mine = m.sender_id === user.id;
-                  return (
-                    <div
-                      key={m.id}
-                      className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm animate-fade-in ${
-                        mine
-                          ? "bg-[rgba(212,175,55,0.15)] text-foreground self-end ml-auto rounded-br-sm"
-                          : "bg-[var(--surface-strong)] text-foreground self-start rounded-bl-sm"
-                      }`}
-                    >
-                      {!mine && (
-                        <div className="text-[11px] font-medium text-gold mb-0.5">{m.sender_name}</div>
-                      )}
-                      {m.text}
-                      <div className="text-[10px] mt-1 text-muted">
-                        {formatRelative(m.created_at)}
-                      </div>
-                    </div>
-                  );
-                })}
-                {messages.length === 0 && (
-                  <div className="text-center text-sm text-muted pt-10">{t("messages.empty")}</div>
-                )}
-              </div>
-              <div className="border-t border-[var(--border)] p-3 flex gap-2">
+           <div className="flex-1 overflow-y-auto p-4 space-y-3" ref={scrollRef}>
+                 {messages.map((m) => {
+                   const mine = m.sender_id === user.id;
+                   return (
+                     <div
+                       key={m.id}
+                       className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm animate-fade-in ${
+                         mine
+                           ? "bg-[rgba(212,175,55,0.15)] text-foreground self-end ml-auto rounded-br-sm"
+                           : "bg-[var(--surface-strong)] text-foreground self-start rounded-bl-sm"
+                       }`}
+                     >
+                       {!mine && (
+                         <div className="text-[11px] font-medium text-gold mb-0.5">{m.sender_name}</div>
+                       )}
+                       {m.text}
+                       <div className="text-[10px] mt-1 text-muted">
+                         {formatRelative(m.created_at)}
+                       </div>
+                     </div>
+                   );
+                 })}
+                 {messages.length === 0 && (
+                   <div className="text-center text-sm text-muted pt-10">{t("messages.empty")}</div>
+                 )}
+               </div>
+               {activeConv && (
+                 <ReservationPanel conversationId={activeId} ownerId={activeConv.listing.owner_id} />
+               )}
+               <div className="border-t border-[var(--border)] p-3 flex gap-2">
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
