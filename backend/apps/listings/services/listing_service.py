@@ -346,14 +346,29 @@ class ListingService:
                 },
             )
 
-            if not ai_ok:
-                return listing  # stays AI_CHECKING; re-queued by periodic task
+            # Barcha e'lonlar darhol nashr qilinadi. Xavf darajasi saqlanadi va
+            # yuqori xavfli e'lonlar keyinroq admin/moderator tomonidan ko'rib
+            # chiqilishi uchun xabar qilinadi.
+            if assessment["level"] != "low":
+                try:
+                    from django.contrib.auth import get_user_model
 
-            if assessment["level"] == "low":
-                cls.transition(listing, ListingStatus.APPROVED, note="Xavf darajasi past")
-                cls.transition(listing, ListingStatus.PUBLISHED, note="Avtomatik e'lon qilindi")
-            else:
-                cls.transition(listing, ListingStatus.NEEDS_REVIEW, note="Moderator tekshiruvi talab qilinadi")
+                    User = get_user_model()
+                    for moderator in User.objects.filter(
+                        role__in=["moderator", "admin"], is_active=True
+                    ):
+                        NotificationService.create(
+                            user=moderator,
+                            type_="report_update",
+                            title="Yangi e'lon: yuqori xavf",
+                            body=f"'{listing.title}' e'lonida yuqori xavf aniqlandi.",
+                            data={"listing_id": str(listing.id)},
+                        )
+                except Exception:
+                    logger.warning("notify review failed for %s", listing.id)
+
+            cls.transition(listing, ListingStatus.APPROVED, note="Xavf tekshiruvi yakunlandi")
+            cls.transition(listing, ListingStatus.PUBLISHED, note="Avtomatik e'lon qilindi")
             return listing
 
     @classmethod
