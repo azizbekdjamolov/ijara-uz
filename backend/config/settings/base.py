@@ -257,6 +257,14 @@ GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN", default="")
 TELEGRAM_BOT_DOMAIN = env("TELEGRAM_BOT_DOMAIN", default="https://ijara-frontend.onrender.com")
 
+# Public URL where Telegram should deliver bot updates (webhook).
+# Example: https://api.example.com/api/v1/auth/telegram/webhook/
+TELEGRAM_WEBHOOK_URL = env("TELEGRAM_WEBHOOK_URL", default="")
+
+# Optional secret token Telegram sends in the X-Telegram-Bot-Api-Secret-Token
+# header. Set the same value here and when registering the webhook.
+TELEGRAM_WEBHOOK_SECRET = env("TELEGRAM_WEBHOOK_SECRET", default="")
+
 # Telegram channel ID for posting new listings (optional).
 # Numeric chat_id or @channel_username string. Leave empty to disable auto-posting.
 TELEGRAM_CHANNEL_ID = env("TELEGRAM_CHANNEL_ID", default="")

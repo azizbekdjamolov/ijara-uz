@@ -66,6 +66,17 @@ def set_my_commands(commands: list[dict]) -> dict:
     return _post("setMyCommands", json={"commands": commands})
 
 
-def set_webhook(url: str) -> dict:
-    """Register a webhook URL with Telegram."""
-    return _post("setWebhook", json={"url": url, "allowed_updates": ["message", "web_app_data"]})
+def set_webhook(url: str, *, secret_token: str | None = None) -> dict:
+    """Register a webhook URL with Telegram.
+
+    The *secret_token* (if provided) is sent by Telegram in the
+    ``X-Telegram-Bot-Api-Secret-Token`` header and must be verified on our side.
+    """
+    payload: dict = {
+        "url": url,
+        "allowed_updates": ["message", "callback_query", "web_app_data"],
+        "drop_pending_updates": True,
+    }
+    if secret_token:
+        payload["secret_token"] = secret_token
+    return _post("setWebhook", json=payload)

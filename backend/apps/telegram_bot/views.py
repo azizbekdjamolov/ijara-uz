@@ -27,6 +27,8 @@ logger = logging.getLogger("apps.telegram_bot")
 
 # ─── Webhook handler ──────────────────────────────────────────────────────
 
+BOT_SITE_URL = getattr(settings, "TELEGRAM_BOT_DOMAIN", "https://ijara.uz").rstrip("/")
+
 BOT_COMMANDS = {
     "/start": (
         "Salom! 👋 Ijara.uz botiga xush kelibsiz!\n\n"
@@ -34,7 +36,7 @@ BOT_COMMANDS = {
         "🏠 E'lonlarni ko'rish\n"
         "🔍 Qidiruv\n"
         "📱 Ijara.uz dan foydalanish\n\n"
-        "Saytga o'tish: https://ijara-frontend.onrender.com"
+        f"Saytga o'tish: {BOT_SITE_URL}"
     ),
     "/help": (
         "Ijara.uz Bot Yordam 📋\n\n"
@@ -75,7 +77,8 @@ def _handle_message(message: dict) -> None:
     if text in ("/start", "/help"):
         if text == "/start" and telegram_id:
             code = generate_login_code(telegram_id)
-            mini_app_url = "https://ijara-frontend.onrender.com/telegram-app"
+            site_domain = getattr(settings, "TELEGRAM_BOT_DOMAIN", "https://ijara.uz").rstrip("/")
+            mini_app_url = f"{site_domain}/telegram-app"
             reply = (
                 f"Salom, {first_name}! 👋\n\n"
                 "Ijara.uz — O'zbekistonda uy-joy ijarasi.\n\n"
@@ -103,10 +106,11 @@ def _handle_message(message: dict) -> None:
     elif text == "/login":
         if telegram_id:
             code = generate_login_code(telegram_id)
+            site_domain = getattr(settings, "TELEGRAM_BOT_DOMAIN", "https://ijara.uz").rstrip("/")
             send_message(
                 chat_id,
                 f"🔑 Tasdiqlash kodi: <b>{code}</b>\n\n"
-                "Uni https://ijara-frontend.onrender.com/login sahifasida kiriting.\n"
+                f"Uni {site_domain}/login sahifasida kiriting.\n"
                 "Kod 5 daqiqa ichida yaroqsiz bo'ladi.",
             )
         else:
