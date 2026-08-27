@@ -15,23 +15,14 @@ const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? "";
 
 function LogoSvg({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <rect width="40" height="40" rx="12" fill="url(#logo-grad)" />
-      <path
-        d="M12 28V12h3.2c1.8 0 3.2.6 4.1 1.6.8.9 1.3 2.2 1.3 3.7 0 1.5-.5 2.7-1.3 3.6-.9 1-2.3 1.5-4.1 1.5H15v5.6H12zm3-7.8h.3c1.1 0 1.9-.3 2.4-.9.5-.6.8-1.3.8-2.2s-.3-1.6-.8-2.2c-.5-.6-1.3-.9-2.4-.9H15v6.2z"
-        fill="#1a1405"
-      />
-      <path
-        d="M23 28V12h3.2l4.8 10.8V12H34v16h-3.2L26 17.2V28H23z"
-        fill="#1a1405"
-      />
-      <defs>
-        <linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#e8c869" />
-          <stop offset="1" stopColor="#b3902a" />
-        </linearGradient>
-      </defs>
-    </svg>
+    <span
+      className={
+        "text-3xl rounded-xl bg-gradient-to-b from-[#e8c869] to-[#b3902a] text-[#1a1405] flex items-center justify-center font-serif font-bold shadow-[0_4px_16px_rgba(212,175,55,0.4)] " +
+        (className ?? "")
+      }
+    >
+      I
+    </span>
   );
 }
 
