@@ -8,7 +8,12 @@ import logging
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from apps.telegram_bot.services import set_my_commands, set_webhook
+from apps.telegram_bot.services import (
+    set_my_commands,
+    set_my_description,
+    set_my_short_description,
+    set_webhook,
+)
 
 logger = logging.getLogger("apps.telegram_bot")
 
@@ -27,6 +32,17 @@ class Command(BaseCommand):
         except Exception as exc:
             logger.warning("Bot buyruqlarini o'rnatib bo'lmadi: %s", exc)
             self.stdout.write(self.style.WARNING(f"Bot buyruqlarini o'rnatib bo'lmadi: {exc}"))
+
+        try:
+            set_my_description(
+                "Ijara.uz — O'zbekistonda kvartira va xonalar ijarasi boti. "
+                "E'lonlarni qidirish va ko'rish, shuningdek o'z e'loningizni joylash mumkin."
+            )
+            set_my_short_description("Ijara.uz — uy-joy ijarasi bo'yicha e'lonlar")
+            self.stdout.write(self.style.SUCCESS("Bot tavsifi muvaffaqiyatli o'rnatildi."))
+        except Exception as exc:
+            logger.warning("Bot tavsifini o'rnatib bo'lmadi: %s", exc)
+            self.stdout.write(self.style.WARNING(f"Bot tavsifini o'rnatib bo'lmadi: {exc}"))
 
         webhook_url = getattr(settings, "TELEGRAM_WEBHOOK_URL", "")
         if not webhook_url:

@@ -66,6 +66,22 @@ def set_my_commands(commands: list[dict]) -> dict:
     return _post("setMyCommands", json={"commands": commands})
 
 
+def set_my_description(description: str = "", *, language_code: str | None = None) -> dict:
+    """Set the bot's long description (removes the default placeholder text)."""
+    payload: dict = {"description": description}
+    if language_code:
+        payload["language_code"] = language_code
+    return _post("setMyDescription", json=payload)
+
+
+def set_my_short_description(short_description: str = "", *, language_code: str | None = None) -> dict:
+    """Set the bot's short description (shown in the chat header)."""
+    payload: dict = {"short_description": short_description}
+    if language_code:
+        payload["language_code"] = language_code
+    return _post("setMyShortDescription", json=payload)
+
+
 def set_webhook(url: str, *, secret_token: str | None = None) -> dict:
     """Register a webhook URL with Telegram.
 
