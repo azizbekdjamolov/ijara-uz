@@ -7,6 +7,19 @@ from apps.listings.models import Listing, ListingImage, Property, Report
 from apps.listings.services.listing_service import ListingService
 
 
+def _safe_abs_url(file_field, request) -> str | None:
+    """Build an absolute URL for an ImageFieldFile, tolerating missing files."""
+    if not file_field:
+        return None
+    try:
+        url = file_field.url
+    except Exception:
+        return None
+    if request is not None:
+        return request.build_absolute_uri(url)
+    return url
+
+
 class AmenitySerializer(serializers.Serializer):
     key = serializers.CharField()
     label = serializers.CharField()
@@ -95,22 +108,20 @@ class ListingImageSerializer(serializers.ModelSerializer):
         model = ListingImage
         fields = ("id", "image", "thumb", "order", "is_primary")
 
-    def _abs(self, file_field) -> str:
-        request = self.context.get("request")
-        url = file_field.url if file_field else ""
-        return request.build_absolute_uri(url) if request else url
+    def _abs(self, file_field) -> str | None:
+        return _safe_abs_url(file_field, self.context.get("request"))
 
-    def get_image(self, obj) -> str:
+    def get_image(self, obj) -> str | None:
         return self._abs(obj.image)
 
     def get_thumb(self, obj) -> str | None:
-        return self._abs(obj.thumb) if obj.thumb else None
+        return self._abs(obj.thumb)
 
 
 class OwnerSummarySerializer(serializers.ModelSerializer):
-    full_name = serializers.CharField(source="profile.full_name", read_only=True)
-    avatar = serializers.ImageField(source="profile.avatar", read_only=True)
-    active_listings = serializers.IntegerField(read_only=True)
+    full_name = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+    active_listings = serializers.SerializerMethodField()
     member_since = serializers.SerializerMethodField()
 
     class Meta:
@@ -125,6 +136,22 @@ class OwnerSummarySerializer(serializers.ModelSerializer):
             "active_listings",
             "role",
         )
+
+    def get_full_name(self, obj) -> str:
+        try:
+            return obj.profile.full_name or ""
+        except Exception:
+            return ""
+
+    def get_avatar(self, obj) -> str | None:
+        try:
+            avatar = obj.profile.avatar
+            return avatar.url if avatar else None
+        except Exception:
+            return None
+
+    def get_active_listings(self, obj) -> int:
+        return obj.listings.filter(status="published").count()
 
     def get_member_since(self, obj) -> str | None:
         return obj.date_joined.date().isoformat() if obj.date_joined else None
@@ -177,10 +204,8 @@ class ListingSummarySerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         return {
             "id": str(img.id),
-            "image": request.build_absolute_uri(img.image.url) if request else img.image.url,
-            "thumb": (
-                request.build_absolute_uri(img.thumb.url) if request and img.thumb else None
-            ),
+            "image": _safe_abs_url(img.image, request),
+            "thumb": _safe_abs_url(img.thumb, request),
         }
 
     def get_image_count(self, obj) -> int:
@@ -196,11 +221,17 @@ class ListingSummarySerializer(serializers.ModelSerializer):
             return any(f.user_id == user.id for f in favorites)
         return obj.favorites.filter(user=user).exists()
 
-    def get_risk_level(self, obj) -> str | None:
+    def _get_risk(self, obj):
         risk = getattr(obj, "prefetched_risk", None)
         if risk is not None:
-            return risk.level
-        risk = getattr(obj, "risk", None)
+            return risk
+        try:
+            return obj.risk
+        except Exception:
+            return None
+
+    def get_risk_level(self, obj) -> str | None:
+        risk = self._get_risk(obj)
         return risk.level if risk else None
 
 
@@ -213,13 +244,14 @@ class ListingDetailSerializer(ListingSummarySerializer):
 
     def get_verification(self, obj) -> dict:
         """Only real verification facts. Never invented claims."""
+        risk = self._get_risk(obj)
         return {
             "owner_phone_verified": obj.owner.is_phone_verified,
             "owner_profile_verified": obj.owner.is_profile_verified,
-            "listing_checked": obj.risk is not None and obj.risk.level == "low"
+            "listing_checked": risk is not None and risk.level == "low"
             and obj.status == "published",
-            "risk_level": getattr(obj.risk, "level", None),
-            "risk_reasons": getattr(obj.risk, "reasons", []) if obj.risk else [],
+            "risk_level": risk.level if risk else None,
+            "risk_reasons": risk.reasons if risk else [],
         }
 
 
