@@ -156,6 +156,8 @@ async function request<T>(
       } catch {
         data = null;
       }
+    } else if (!response.ok) {
+      data = { message: `Server xatosi (${response.status})` } as unknown;
     } else {
       try {
         const text = await response.text();
