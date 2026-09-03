@@ -1,4 +1,5 @@
-﻿from rest_framework import permissions
+﻿from django.db.models import Count, Q
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,14 +13,20 @@ class OwnerStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        listings = Listing.objects.filter(owner=request.user).exclude(
-            status=ListingStatus.DELETED
-        ).order_by("-created_at")[:200]
+        listings = (
+            Listing.objects
+            .filter(owner=request.user)
+            .exclude(status=ListingStatus.DELETED)
+            .select_related("prop")
+            .prefetch_related("images", "favorites")
+            .annotate(contacts_count=Count(
+                "events",
+                filter=Q(events__event_type=ListingEventType.CONTACT),
+            ))
+            .order_by("-created_at")[:200]
+        )
         data = []
         for listing in listings:
-            contacts = ListingEvent.objects.filter(
-                listing=listing, event_type=ListingEventType.CONTACT
-            ).count()
             data.append(
                 {
                     "id": str(listing.id),
@@ -28,7 +35,7 @@ class OwnerStatsView(APIView):
                     "status": listing.status,
                     "views": listing.views,
                     "favorites_count": listing.favorites.count(),
-                    "contacts": contacts,
+                    "contacts": listing.contacts_count,
                     "created_at": listing.created_at,
                 }
             )

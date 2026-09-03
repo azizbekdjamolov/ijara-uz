@@ -67,9 +67,8 @@ class RegisterCompleteSerializer(serializers.Serializer):
             user = User.objects.get(phone=phone)
         except User.DoesNotExist as err:
             raise serializers.ValidationError({"phone": "Foydalanuvchi topilmadi."}) from err
-        # SMS vaqtincha o'chirilgan — is_phone_verified tekshiruvi olib tashlandi (xozircha)
-        # if not user.is_phone_verified:
-        #     raise serializers.ValidationError({"phone": "Telefon hali tasdiqlanmagan. Avval OTP ni tasdiqlang."})
+        if not user.is_phone_verified:
+            raise serializers.ValidationError({"phone": "Telefon hali tasdiqlanmagan. Avval OTP ni tasdiqlang."})
         if user.is_banned:
             raise serializers.ValidationError({"phone": "Akkaunt bloklangan."})
         attrs["user"] = user

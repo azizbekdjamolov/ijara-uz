@@ -221,6 +221,7 @@ class _VerifyCodeView(APIView):
         if request.user and request.user.is_authenticated:
             return request.user
         # Unauthenticated (registration flow) -> require phone/email in body
+        GENERIC_MSG = "Agar ushbu raqam/email ro'yxatdan o'tgan bo'lsa, tasdiqlash kodi yuborildi."
         if self.channel == VerificationChannel.PHONE:
             phone = (
                 request.data.get("phone")
@@ -250,11 +251,11 @@ class _VerifyCodeView(APIView):
 
         user = self._resolve_user(request)
         if user is None:
-            # Keep 401 for unauthenticated without phone to preserve old behavior/tests
+            # Unified message for unauthenticated to prevent enumeration
             if not (request.user and request.user.is_authenticated):
                 return Response(
-                    {"message": "Avval telefon raqamingizni kiriting."},
-                    status=status.HTTP_401_UNAUTHORIZED,
+                    {"message": "Agar ushbu raqam ro'yxatdan o'tgan bo'lsa, tasdiqlash kodi yuborildi."},
+                    status=status.HTTP_200_OK,
                 )
             return Response(
                 {"message": "Foydalanuvchi topilmadi."},
@@ -381,8 +382,8 @@ class ResendVerificationView(APIView):
         user = self._resolve_user(request, channel)
         if user is None:
             return Response(
-                {"message": "Avval telefon raqamingizni kiriting."},
-                status=status.HTTP_401_UNAUTHORIZED,
+                {"message": "Agar ushbu raqam/email ro'yxatdan o'tgan bo'lsa, tasdiqlash kodi yuborildi."},
+                status=status.HTTP_200_OK,
             )
 
         if channel == VerificationChannel.PHONE and user.is_phone_verified:

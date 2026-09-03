@@ -30,6 +30,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework",
     "django_filters",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 
 LOCAL_APPS = [
@@ -156,6 +157,11 @@ REST_FRAMEWORK = {
     ),
     "EXCEPTION_HANDLER": "apps.core.exceptions.api_exception_handler",
 }
+
+if not DEBUG:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
+        "rest_framework.renderers.JSONRenderer",
+    )
 
 # ---------------------------------------------------------------------------
 # SimpleJWT

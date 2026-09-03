@@ -37,7 +37,7 @@ class ListingNotFound(Exception):
 
 
 class ListingService:
-    # в”Ђв”Ђ Status machine в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+    # --- Status machine ---
     VALID_TRANSITIONS: dict[str, set[str]] = {
         ListingStatus.DRAFT: {
             ListingStatus.PENDING_REVIEW,
@@ -141,7 +141,7 @@ class ListingService:
         logger.info("listing %s: %s -> %s", listing.id, from_status, target)
         return listing
 
-    # в”Ђв”Ђ Limits (anti-spam) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+    # --- Limits (anti-spam) ---
     @classmethod
     def daily_limit_for(cls, user) -> int:
         tier = user.profile.trust_tier
@@ -210,7 +210,7 @@ class ListingService:
                 timeout=cooldown_minutes * 60,
             )
 
-    # в”Ђв”Ђ Create в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+    # --- Create ---
     @classmethod
     @transaction.atomic
     def create(cls, *, owner, data: dict, images: list | None = None, ip_address: str | None = None) -> Listing:
@@ -265,7 +265,7 @@ class ListingService:
             created.append(instance)
         return created
 
-    # в”Ђв”Ђ AI pipeline в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
+    # --- AI pipeline ---
     @classmethod
     def run_ai_pipeline(cls, listing: Listing) -> Listing:
         """Rule checks -> AI gateway (text+images) -> price stats -> risk engine.

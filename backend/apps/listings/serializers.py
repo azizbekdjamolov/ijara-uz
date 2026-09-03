@@ -284,7 +284,7 @@ class ListingWriteSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        property_data = validated_data.pop("prop")
+        property_data = validated_data.pop("property")
         images = self.context.pop("images", None)
         request = self.context.get("request")
         return ListingService.create(
